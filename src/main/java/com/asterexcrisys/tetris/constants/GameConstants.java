@@ -1,0 +1,23 @@
+package com.asterexcrisys.tetris.constants;
+
+import javafx.scene.paint.Color;
+
+public class GameConstants {
+
+    public static final String TITLE = "Tet-Risk: Identity Crisis Edition";
+    public static final int BOARD_HEIGHT = 20;
+    public static final int BOARD_WIDTH = 10;
+    public static final int GRAVITY_TIME = 5;
+    public static final int INITIAL_LEVEL = 1;
+    public static final int LINE_CLEARS_PER_LEVEL = 10;
+    public static final Color[] SUPPORTED_COLORS = new Color[] {
+            Color.rgb(255, 0, 0, 1.0),
+            Color.rgb(255, 127, 0, 1.0),
+            Color.rgb(255, 255, 0, 1.0),
+            Color.rgb(0, 255, 0, 1.0),
+            Color.rgb(0, 255, 255, 1.0),
+            Color.rgb(0, 0, 255, 1.0),
+            Color.rgb(128, 0, 128, 1.0)
+    };
+
+}
