@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<AnchorPane fx:id="creditsPane" prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.asterexcrisys.tetris.controllers.CreditsController">
+    <VBox alignment="CENTER" prefHeight="800.0" prefWidth="600.0" spacing="50.0" style="-fx-background-color: #103cd6;">
+        <Label text="CREDITS" textFill="#c8b67f">
+            <font>
+                <Font name="System Bold Italic" size="36.0" />
+            </font>
+        </Label>
+        <ScrollPane prefHeight="400.0" prefWidth="600.0">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="600.0">
+                <VBox alignment="CENTER" prefWidth="600.0" spacing="50.0" style="-fx-background-color: #000055; -fx-border-color: #ffffff; -fx-border-width: 5;">
+               <Label alignment="CENTER" layoutX="310.0" layoutY="610.0" textFill="WHITE">
+                  <font>
+                     <Font name="System Bold Italic" size="24.0" />
+                  </font>
+               </Label>
+                    <Label alignment="CENTER" text="Lead Developer: AsterExcrisys" textFill="#009246">
+                        <font>
+                            <Font name="System Bold Italic" size="24.0" />
+                        </font>
+                    </Label>
+                    <Label alignment="CENTER" layoutX="143.0" layoutY="108.0" text="UI/UX Designer: AsterExcrisys" textFill="#009246">
+                        <font>
+                            <Font name="System Bold Italic" size="24.0" />
+                        </font>
+                    </Label>
+                    <Label alignment="CENTER" layoutX="143.0" layoutY="193.0" text="SFX/Music Artist: None" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold Italic" size="24.0" />
+                        </font>
+                    </Label>
+                    <Label alignment="CENTER" layoutX="143.0" layoutY="235.0" text="GFX/Image Artist: None" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold Italic" size="24.0" />
+                        </font>
+                    </Label>
+                    <Label alignment="CENTER" layoutX="176.0" layoutY="320.0" text="Special thanks to: None " textFill="#ce2b37">
+                        <font>
+                            <Font name="System Bold Italic" size="24.0" />
+                        </font>
+                    </Label>
+                    <Label alignment="CENTER" layoutX="176.0" layoutY="363.0" text="Developed using: IntelliJ &amp; JavaFX" textFill="#ce2b37">
+                        <font>
+                            <Font name="System Bold Italic" size="24.0" />
+                        </font>
+                    </Label>
+                    <Label alignment="CENTER" layoutX="174.0" layoutY="440.0" text="Thanks for playing!" textFill="#c8b67f">
+                        <font>
+                            <Font name="System Bold Italic" size="24.0" />
+                        </font>
+                    </Label>
+               <Label alignment="CENTER" layoutX="143.0" layoutY="15.0" textFill="WHITE">
+                  <font>
+                     <Font name="System Bold Italic" size="24.0" />
+                  </font>
+               </Label>
+                </VBox>
+            </AnchorPane>
+        </ScrollPane>
+        <Button alignment="CENTER" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #000055;" text="Back" textFill="WHITE">
+            <font>
+                <Font name="System Bold Italic" size="20.0" />
+            </font>
+        </Button>
+    </VBox>
+</AnchorPane>

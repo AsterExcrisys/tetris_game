@@ -1,5 +1,6 @@
 package com.asterexcrisys.tetris.controllers;
 
+import com.asterexcrisys.tetris.MainApplication;
 import com.asterexcrisys.tetris.constants.GameConstants;
 import com.asterexcrisys.tetris.services.GravityCounter;
 import com.asterexcrisys.tetris.services.TetrisBoard;
@@ -11,6 +12,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -19,7 +22,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+import java.io.IOException;
 
 public class GameController {
 
@@ -50,12 +55,6 @@ public class GameController {
     private Button startButton;
 
     @FXML
-    private Button leaderboardButton;
-
-    @FXML
-    private Button creditsButton;
-
-    @FXML
     private Label menuLabel;
 
     private final TetrisBoard game;
@@ -73,7 +72,7 @@ public class GameController {
     }
 
     @FXML
-    public void initialize() {
+    protected void initialize() {
         gamePane.requestFocus();
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -135,7 +134,25 @@ public class GameController {
 
     @FXML
     protected void onCreditsButtonClick() {
-        throw new UnsupportedOperationException("yet to be implemented");
+        if (game.state() != GameState.IDLE) {
+            gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
+            timeline.stop();
+            game.reset();
+            counter.reset();
+            updateBoard();
+            updateProgress();
+            startButton.setText("Start");
+            menuPane.setVisible(false);
+        }
+        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("views/credits-view.fxml"));
+        Scene scene;
+        try {
+            scene = new Scene(loader.load(), 600, 800);
+        } catch (IOException ignored) {
+            return;
+        }
+        Stage stage = (Stage) gamePane.getScene().getWindow();
+        stage.setScene(scene);
     }
 
     private void onKeyPressed(KeyEvent event) {

@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
-<AnchorPane fx:id="gamePane" prefHeight="800.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.asterexcrisys.tetris.controllers.GameController">
+<AnchorPane fx:id="gamePane" prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.asterexcrisys.tetris.controllers.GameController">
     <HBox alignment="CENTER" prefHeight="800.0" prefWidth="600.0">
         <AnchorPane prefHeight="800.0" prefWidth="200.0">
             <VBox alignment="CENTER" prefHeight="800.0" prefWidth="200.0" spacing="50.0" style="-fx-background-color: #103cd6; -fx-border-color: #ffffff; -fx-border-width: 5;">
-            <Label fx:id="levelLabel" alignment="CENTER" text="Level: 1" textFill="WHITE">
+            <Label fx:id="levelLabel" alignment="CENTER" text="Level: 1" textFill="#c8b67f">
                <font>
                   <Font name="System Bold Italic" size="24.0" />
                </font>
             </Label>
-            <Label fx:id="scoreLabel" alignment="CENTER" text="Score: 0" textFill="WHITE">
+            <Label fx:id="scoreLabel" alignment="CENTER" text="Score: 0" textFill="#c8b67f">
                <font>
                   <Font name="System Bold Italic" size="24.0" />
                </font>
@@ -23,12 +21,12 @@
                         <Font name="System Bold Italic" size="20.0" />
                     </font>
                 </Button>
-                <Button fx:id="leaderboardButton" layoutX="60.0" layoutY="385.0" mnemonicParsing="false" onAction="#onLeaderboardButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #ffffff;" text="Leaderboard">
+                <Button layoutX="60.0" layoutY="385.0" mnemonicParsing="false" onAction="#onLeaderboardButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #ffffff;" text="Leaderboard">
                     <font>
                         <Font name="System Bold Italic" size="20.0" />
                     </font>
                 </Button>
-                <Button fx:id="creditsButton" layoutX="60.0" layoutY="435.0" mnemonicParsing="false" onAction="#onCreditsButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #ce2b37;" text="Credits">
+                <Button layoutX="60.0" layoutY="435.0" mnemonicParsing="false" onAction="#onCreditsButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #ce2b37;" text="Credits">
                     <font>
                         <Font name="System Bold Italic" size="20.0" />
                     </font>
