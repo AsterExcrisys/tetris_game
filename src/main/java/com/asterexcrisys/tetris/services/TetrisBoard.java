@@ -14,15 +14,19 @@ public class TetrisBoard {
 
     // TODO: assign a fixed color to each piece instead of randomising it
 
+    // TODO: consider adding listeners for certain events
+
     private final Cell[][] board;
     private final ActiveTetromino tetromino;
     private final ProgressTracker tracker;
+    private final AudioPlayer player;
     private GameState state;
 
     public TetrisBoard() {
         board = new Cell[GameConstants.BOARD_HEIGHT * 2][GameConstants.BOARD_WIDTH];
         tetromino = new ActiveTetromino();
         tracker = new ProgressTracker(GameConstants.INITIAL_LEVEL);
+        player = new AudioPlayer(AudioType.MUSIC_TRACK);
         state = GameState.IDLE;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -52,6 +56,7 @@ public class TetrisBoard {
             return;
         }
         spawnTetromino(false);
+        player.play(MusicTrackType.MAIN_THEME);
         state = GameState.RUNNING;
     }
 
@@ -59,6 +64,7 @@ public class TetrisBoard {
         if (state != GameState.RUNNING) {
             return;
         }
+        player.pause();
         state = GameState.PAUSED;
     }
 
@@ -66,6 +72,7 @@ public class TetrisBoard {
         if (state != GameState.PAUSED) {
             return;
         }
+        player.resume();
         state = GameState.RUNNING;
     }
 
@@ -122,6 +129,7 @@ public class TetrisBoard {
         }
         tetromino.reset();
         tracker.reset();
+        player.reset();
         state = GameState.IDLE;
     }
 

@@ -1,5 +1,6 @@
 package com.asterexcrisys.tetris;
 
+import com.asterexcrisys.tetris.constants.ResourceConstants;
 import com.asterexcrisys.tetris.constants.WindowConstants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -13,11 +14,11 @@ public final class MainApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(WindowConstants.GAME_VIEW));
+        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(ResourceConstants.GAME_VIEW));
         Scene scene = new Scene(loader.load(), WindowConstants.WIDTH, WindowConstants.HEIGHT);
         stage.setTitle(WindowConstants.TITLE);
         stage.getIcons().add(new Image(
-                Objects.requireNonNull(MainApplication.class.getResourceAsStream(WindowConstants.ICON))
+                Objects.requireNonNull(MainApplication.class.getResourceAsStream(ResourceConstants.ICON))
         ));
         stage.setResizable(false);
         stage.setScene(scene);

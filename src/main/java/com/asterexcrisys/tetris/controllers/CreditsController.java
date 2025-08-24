@@ -1,7 +1,7 @@
 package com.asterexcrisys.tetris.controllers;
 
 import com.asterexcrisys.tetris.MainApplication;
-import com.asterexcrisys.tetris.constants.WindowConstants;
+import com.asterexcrisys.tetris.constants.ResourceConstants;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -16,7 +16,7 @@ public final class CreditsController {
 
     @FXML
     private void onBackButtonClick() {
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(WindowConstants.GAME_VIEW));
+        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(ResourceConstants.GAME_VIEW));
         Scene scene;
         try {
             scene = new Scene(loader.load(), 600, 800);

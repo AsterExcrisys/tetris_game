@@ -6,7 +6,7 @@ public final class GameConstants {
 
     public static final int BOARD_HEIGHT = 20;
     public static final int BOARD_WIDTH = 10;
-    public static final int GRAVITY_TIME = 5;
+    public static final int GRAVITY_TIME = 10;
     public static final int INITIAL_LEVEL = 1;
     public static final int LINE_CLEARS_PER_LEVEL = 10;
     public static final Color[] SUPPORTED_COLORS = new Color[] {
