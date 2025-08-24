@@ -19,14 +19,16 @@ public class TetrisBoard {
     private final Cell[][] board;
     private final ActiveTetromino tetromino;
     private final ProgressTracker tracker;
-    private final AudioPlayer player;
+    private final AudioPlayer musicPlayer;
+    private final AudioPlayer soundPlayer;
     private GameState state;
 
     public TetrisBoard() {
         board = new Cell[GameConstants.BOARD_HEIGHT * 2][GameConstants.BOARD_WIDTH];
         tetromino = new ActiveTetromino();
         tracker = new ProgressTracker(GameConstants.INITIAL_LEVEL);
-        player = new AudioPlayer(AudioType.MUSIC_TRACK);
+        musicPlayer = new AudioPlayer(AudioType.MUSIC_TRACK);
+        soundPlayer = new AudioPlayer(AudioType.SOUND_EFFECT);
         state = GameState.IDLE;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -56,7 +58,7 @@ public class TetrisBoard {
             return;
         }
         spawnTetromino(false);
-        player.play(MusicTrackType.MAIN_THEME);
+        musicPlayer.play(MusicTrackType.MAIN_THEME);
         state = GameState.RUNNING;
     }
 
@@ -64,7 +66,7 @@ public class TetrisBoard {
         if (state != GameState.RUNNING) {
             return;
         }
-        player.pause();
+        musicPlayer.pause();
         state = GameState.PAUSED;
     }
 
@@ -72,7 +74,7 @@ public class TetrisBoard {
         if (state != GameState.PAUSED) {
             return;
         }
-        player.resume();
+        musicPlayer.resume();
         state = GameState.RUNNING;
     }
 
@@ -101,6 +103,7 @@ public class TetrisBoard {
                     blockTetromino();
                     checkTetrisLines();
                     spawnTetromino(true);
+                    soundPlayer.play(SoundEffectType.TETROMINO_LOCKED);
                     return;
                 }
             }
@@ -116,6 +119,7 @@ public class TetrisBoard {
             }
         }
         updateTetromino(type);
+        soundPlayer.play(SoundEffectType.TETROMINO_MOVED);
     }
 
     public void reset() {
@@ -129,7 +133,8 @@ public class TetrisBoard {
         }
         tetromino.reset();
         tracker.reset();
-        player.reset();
+        musicPlayer.reset();
+        soundPlayer.reset();
         state = GameState.IDLE;
     }
 
@@ -190,7 +195,17 @@ public class TetrisBoard {
         for (Integer index : indexes) {
             clearLine(index);
         }
-        tracker.track(LineClearType.linesOf(indexes.size()));
+        LineClearType type = LineClearType.linesOf(indexes.size());
+        if (type == null) {
+            return;
+        }
+        tracker.track(type);
+        switch (type) {
+            case SINGLE -> soundPlayer.play(SoundEffectType.ONE_LINE_CLEARED);
+            case DOUBLE -> soundPlayer.play(SoundEffectType.TWO_LINES_CLEARED);
+            case TRIPLE -> soundPlayer.play(SoundEffectType.THREE_LINES_CLEARED);
+            case TETRIS -> soundPlayer.play(SoundEffectType.FOUR_LINES_CLEARED);
+        }
     }
 
     private List<Integer> findAffectedLines() {
