@@ -2,9 +2,8 @@ package com.asterexcrisys.tetris.constants;
 
 import javafx.scene.paint.Color;
 
-public class GameConstants {
+public final class GameConstants {
 
-    public static final String TITLE = "Tet-Risk: Identity Crisis Edition";
     public static final int BOARD_HEIGHT = 20;
     public static final int BOARD_WIDTH = 10;
     public static final int GRAVITY_TIME = 5;

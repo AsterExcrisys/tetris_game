@@ -6,6 +6,7 @@ module com.asterexcrisys.tetris {
     requires org.kordamp.ikonli.javafx;
     requires com.almasb.fxgl.all;
     requires annotations;
+    requires javafx.media;
     opens com.asterexcrisys.tetris to javafx.fxml;
     exports com.asterexcrisys.tetris;
     exports com.asterexcrisys.tetris.controllers;

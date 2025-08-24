@@ -2,6 +2,7 @@ package com.asterexcrisys.tetris.controllers;
 
 import com.asterexcrisys.tetris.MainApplication;
 import com.asterexcrisys.tetris.constants.GameConstants;
+import com.asterexcrisys.tetris.constants.WindowConstants;
 import com.asterexcrisys.tetris.services.GravityCounter;
 import com.asterexcrisys.tetris.services.TetrisBoard;
 import com.asterexcrisys.tetris.types.Cell;
@@ -21,12 +22,15 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.io.IOException;
+import java.util.Objects;
 
-public class GameController {
+public final class GameController {
 
     // TODO: add the level and point system
 
@@ -34,7 +38,7 @@ public class GameController {
 
     // TODO: add the tetromino hold system
 
-    // TODO: add music and graphic effects to line collapsing and/or tetris
+    // TODO: add music and graphic effects to line collapsing and/or tetris (https://downloads.khinsider.com/game-soundtracks/album/tetris-gb)
 
     @FXML
     private AnchorPane gamePane;
@@ -61,6 +65,7 @@ public class GameController {
     private final GravityCounter counter;
     private final Pane[][] board;
     private final EventHandler<KeyEvent> handler;
+    private final MediaPlayer player;
     private Timeline timeline;
 
     public GameController() {
@@ -68,11 +73,15 @@ public class GameController {
         counter = new GravityCounter(GameConstants.GRAVITY_TIME);
         board = new Pane[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
         handler = this::onKeyPressed;
+        player = new MediaPlayer(new Media(
+                Objects.requireNonNull(MainApplication.class.getResource(WindowConstants.MAIN_THEME)).toExternalForm()
+        ));
+        player.setCycleCount(MediaPlayer.INDEFINITE);
         timeline = null;
     }
 
     @FXML
-    protected void initialize() {
+    private void initialize() {
         gamePane.requestFocus();
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -85,7 +94,7 @@ public class GameController {
     }
 
     @FXML
-    protected void onStartButtonClick() {
+    private void onStartButtonClick() {
         if (game.state() != GameState.IDLE) {
             gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
             timeline.stop();
@@ -93,6 +102,7 @@ public class GameController {
             counter.reset();
             updateBoard();
             updateProgress();
+            player.stop();
             startButton.setText("Start");
             menuPane.setVisible(false);
             return;
@@ -107,6 +117,7 @@ public class GameController {
                     timeline.stop();
                     game.reset();
                     counter.reset();
+                    player.stop();
                     startButton.setText("Start");
                     menuLabel.setText("Game Over");
                     menuPane.setVisible(true);
@@ -123,17 +134,18 @@ public class GameController {
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
         gamePane.addEventHandler(KeyEvent.KEY_PRESSED, handler);
+        player.play();
         startButton.setText("End");
         menuPane.setVisible(false);
     }
 
     @FXML
-    protected void onLeaderboardButtonClick() {
+    private void onLeaderboardButtonClick() {
         throw new UnsupportedOperationException("yet to be implemented");
     }
 
     @FXML
-    protected void onCreditsButtonClick() {
+    private void onCreditsButtonClick() {
         if (game.state() != GameState.IDLE) {
             gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
             timeline.stop();
@@ -141,10 +153,11 @@ public class GameController {
             counter.reset();
             updateBoard();
             updateProgress();
+            player.stop();
             startButton.setText("Start");
             menuPane.setVisible(false);
         }
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("views/credits-view.fxml"));
+        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(WindowConstants.CREDITS_VIEW));
         Scene scene;
         try {
             scene = new Scene(loader.load(), 600, 800);
@@ -160,11 +173,13 @@ public class GameController {
             switch (game.state()) {
                 case RUNNING -> {
                     game.pause();
+                    player.pause();
                     menuLabel.setText("Game Paused");
                     menuPane.setVisible(true);
                 }
                 case PAUSED -> {
                     game.resume();
+                    player.play();
                     menuPane.setVisible(false);
                 }
             }

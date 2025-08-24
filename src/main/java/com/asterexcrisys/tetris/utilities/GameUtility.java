@@ -6,7 +6,7 @@ import com.asterexcrisys.tetris.types.TetrominoType;
 import javafx.scene.paint.Color;
 import java.util.Random;
 
-public class GameUtility {
+public final class GameUtility {
 
     private static final Random RANDOM;
 
