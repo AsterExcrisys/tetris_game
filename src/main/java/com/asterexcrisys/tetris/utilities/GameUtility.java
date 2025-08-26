@@ -1,10 +1,11 @@
 package com.asterexcrisys.tetris.utilities;
 
 import com.asterexcrisys.tetris.constants.GameConstants;
+import com.asterexcrisys.tetris.types.Element;
 import com.asterexcrisys.tetris.types.Position;
 import com.asterexcrisys.tetris.types.TetrominoType;
 import javafx.scene.paint.Color;
-import java.util.Random;
+import java.util.*;
 
 public final class GameUtility {
 
@@ -14,7 +15,22 @@ public final class GameUtility {
         RANDOM = new Random();
     }
 
-    public static Position randomomisePosition() {
+    public static List<Element> shuffleTetrominos() {
+        TetrominoType[] types = TetrominoType.values();
+        for (int i = 0; i < types.length; i++) {
+            int index = RANDOM.nextInt(types.length);
+            TetrominoType type = types[index];
+            types[index] = types[i];
+            types[i] = type;
+        }
+        List<Element> list = new ArrayList<>();
+        for (TetrominoType type : types) {
+            list.add(Element.of(randomisePosition(), type, randomiseColor()));
+        }
+        return list;
+    }
+
+    public static Position randomisePosition() {
         return Position.of(
                 RANDOM.nextInt(GameConstants.BOARD_HEIGHT - 3),
                 RANDOM.nextInt(GameConstants.BOARD_WIDTH - 3)

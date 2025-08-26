@@ -1,5 +1,7 @@
 package com.asterexcrisys.tetris.services;
 
+import com.asterexcrisys.tetris.adapters.MusicPlayer;
+import com.asterexcrisys.tetris.adapters.Playable;
 import com.asterexcrisys.tetris.types.AudioState;
 import com.asterexcrisys.tetris.types.AudioType;
 import com.asterexcrisys.tetris.types.MusicTrackType;
@@ -12,7 +14,9 @@ import java.util.Objects;
 
 public class AudioPlayer {
 
-    private final Map<Enum<?>, MediaPlayer> audios;
+    // TODO: replace MediaPlayer with AudioClip for sound effects
+
+    private final Map<Enum<?>, Playable> audios;
     private AudioState state;
     private Enum<?> audio;
 
@@ -23,14 +27,14 @@ public class AudioPlayer {
         switch (Objects.requireNonNull(type)) {
             case MUSIC_TRACK -> {
                 for (MusicTrackType track : MusicTrackType.values()) {
-                    MediaPlayer player = new MediaPlayer(new Media(track.resource()));
+                    MusicPlayer player = new MusicPlayer(new MediaPlayer(new Media(track.resource())));
                     player.setCycleCount(MediaPlayer.INDEFINITE);
                     audios.put(track, player);
                 }
             }
             case SOUND_EFFECT -> {
                 for (SoundEffectType effect : SoundEffectType.values()) {
-                    MediaPlayer player = new MediaPlayer(new Media(effect.resource()));
+                    MusicPlayer player = new MusicPlayer(new MediaPlayer(new Media(effect.resource())));
                     player.setCycleCount(1);
                     audios.put(effect, player);
                 }
@@ -58,6 +62,12 @@ public class AudioPlayer {
         audios.get(audio).setVolume(volume);
     }
 
+    public void setGlobalVolume(double volume) {
+        for (Playable player : audios.values()) {
+            player.setVolume(volume);
+        }
+    }
+
     public void play(Enum<?> audio) {
         if (state != AudioState.IDLE) {
             return;
@@ -65,17 +75,18 @@ public class AudioPlayer {
         if (audio == null || !audios.containsKey(audio)) {
             return;
         }
-        audios.get(audio).setOnEndOfMedia(() -> {
-            if (audios.get(this.audio).getCycleCount() == MediaPlayer.INDEFINITE) {
-                return;
-            }
-            audios.get(this.audio).setOnEndOfMedia(null);
-            state = AudioState.IDLE;
-            this.audio = null;
-        });
-        audios.get(audio).play();
         state = AudioState.PLAYING;
         this.audio = audio;
+        audios.get(this.audio).setListener(() -> {
+            if (state != AudioState.PLAYING || audios.get(this.audio).getCycleCount() == MediaPlayer.INDEFINITE) {
+                return;
+            }
+            state = AudioState.IDLE;
+            audios.get(this.audio).stop();
+            audios.get(this.audio).setListener(null);
+            this.audio = null;
+        });
+        audios.get(this.audio).play();
     }
 
     public void play() {
@@ -85,8 +96,8 @@ public class AudioPlayer {
         if (audio == null) {
             return;
         }
-        audios.get(audio).play();
         state = AudioState.PLAYING;
+        audios.get(audio).play();
     }
 
     public void pause() {
@@ -96,8 +107,8 @@ public class AudioPlayer {
         if (audio == null) {
             return;
         }
-        audios.get(audio).pause();
         state = AudioState.PAUSED;
+        audios.get(audio).pause();
     }
 
     public void resume() {
@@ -107,8 +118,8 @@ public class AudioPlayer {
         if (audio == null) {
             return;
         }
-        audios.get(audio).play();
         state = AudioState.PLAYING;
+        audios.get(audio).play();
     }
 
     public void stop() {
@@ -118,8 +129,8 @@ public class AudioPlayer {
         if (audio == null) {
             return;
         }
-        audios.get(audio).stop();
         state = AudioState.STOPPED;
+        audios.get(audio).stop();
     }
 
     public void reset() {
@@ -129,21 +140,21 @@ public class AudioPlayer {
         if (audio == null) {
             return;
         }
-        audios.get(audio).stop();
-        audios.get(audio).setOnEndOfMedia(null);
         state = AudioState.IDLE;
+        audios.get(audio).stop();
+        audios.get(audio).setListener(null);
         audio = null;
     }
 
     public void dispose() {
-        for (MediaPlayer player : audios.values()) {
+        state = AudioState.IDLE;
+        audio = null;
+        for (Playable player : audios.values()) {
             player.stop();
-            player.setOnEndOfMedia(null);
+            player.setListener(null);
             player.dispose();
         }
         audios.clear();
-        state = AudioState.IDLE;
-        audio = null;
     }
 
 }

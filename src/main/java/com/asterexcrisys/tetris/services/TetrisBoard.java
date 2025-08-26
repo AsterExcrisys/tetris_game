@@ -1,5 +1,6 @@
 package com.asterexcrisys.tetris.services;
 
+import com.asterexcrisys.tetris.GlobalSettings;
 import com.asterexcrisys.tetris.constants.GameConstants;
 import com.asterexcrisys.tetris.types.*;
 import javafx.scene.paint.Color;
@@ -17,6 +18,7 @@ public class TetrisBoard {
     // TODO: consider adding listeners for certain events
 
     private final Cell[][] board;
+    private final TetrominoQueue queue;
     private final ActiveTetromino tetromino;
     private final ProgressTracker tracker;
     private final AudioPlayer musicPlayer;
@@ -25,7 +27,8 @@ public class TetrisBoard {
 
     public TetrisBoard() {
         board = new Cell[GameConstants.BOARD_HEIGHT * 2][GameConstants.BOARD_WIDTH];
-        tetromino = new ActiveTetromino();
+        queue = new TetrominoQueue();
+        tetromino = new ActiveTetromino(queue.poll());
         tracker = new ProgressTracker(GameConstants.INITIAL_LEVEL);
         musicPlayer = new AudioPlayer(AudioType.MUSIC_TRACK);
         soundPlayer = new AudioPlayer(AudioType.SOUND_EFFECT);
@@ -35,10 +38,16 @@ public class TetrisBoard {
                 board[i][j] = new Cell(CellType.EMPTY, Color.TRANSPARENT);
             }
         }
+        musicPlayer.setGlobalVolume(GlobalSettings.getInstance().getMusicVolume());
+        soundPlayer.setGlobalVolume(GlobalSettings.getInstance().getSoundVolume());
     }
 
     public Cell[][] board() {
         return board;
+    }
+
+    public TetrominoQueue queue() {
+        return queue;
     }
 
     public ActiveTetromino tetromino() {
@@ -119,7 +128,29 @@ public class TetrisBoard {
             }
         }
         updateTetromino(type);
-        soundPlayer.play(SoundEffectType.TETROMINO_MOVED);
+        switch (type) {
+            case GO_LEFT, GO_RIGHT, ROTATE_LEFT, ROTATE_RIGHT -> soundPlayer.play(SoundEffectType.TETROMINO_MOVED);
+        }
+    }
+
+    public void holdTetromino() {
+        if (!queue.canHold()) {
+            return;
+        }
+        Element element = queue.hold(Element.of(
+                tetromino.pivot(),
+                tetromino.type(),
+                tetromino.color()
+        ));
+        for (Position position : tetromino.position()) {
+            board[position.x()][position.y()].setType(CellType.EMPTY);
+            board[position.x()][position.y()].setColor(Color.TRANSPARENT);
+        }
+        tetromino.reset(element);
+        for (Position position : tetromino.position()) {
+            board[position.x()][position.y()].setType(CellType.MOVABLE);
+            board[position.x()][position.y()].setColor(tetromino.color());
+        }
     }
 
     public void reset() {
@@ -131,7 +162,8 @@ public class TetrisBoard {
                 board[i][j] = new Cell(CellType.EMPTY, Color.TRANSPARENT);
             }
         }
-        tetromino.reset();
+        queue.reset();
+        tetromino.reset(queue.poll());
         tracker.reset();
         musicPlayer.reset();
         soundPlayer.reset();
@@ -148,6 +180,7 @@ public class TetrisBoard {
             blockTetromino();
             checkTetrisLines();
             spawnTetromino(true);
+            soundPlayer.play(SoundEffectType.TETROMINO_LOCKED);
             return;
         }
         tetromino.applyMovement(type);
@@ -159,7 +192,7 @@ public class TetrisBoard {
 
     private void spawnTetromino(boolean shouldReset) {
         if (shouldReset) {
-            tetromino.reset();
+            tetromino.reset(queue.poll());
             if (!tetromino.canSpawn(board)) {
                 state = GameState.OVER;
                 return;

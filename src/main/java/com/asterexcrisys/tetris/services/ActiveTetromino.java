@@ -3,6 +3,7 @@ package com.asterexcrisys.tetris.services;
 import com.asterexcrisys.tetris.types.*;
 import com.asterexcrisys.tetris.utilities.GameUtility;
 import javafx.scene.paint.Color;
+import java.util.Objects;
 
 public class ActiveTetromino {
 
@@ -10,14 +11,27 @@ public class ActiveTetromino {
 
     public ActiveTetromino() {
         tetromino = Tetromino.of(
-                GameUtility.randomomisePosition(),
+                GameUtility.randomisePosition(),
                 GameUtility.randomiseType(),
                 GameUtility.randomiseColor()
         );
     }
 
+    public ActiveTetromino(Element element) {
+        Objects.requireNonNull(element);
+        tetromino = Tetromino.of(element.position(), element.type(), element.color());
+    }
+
+    public ActiveTetromino(Position position, TetrominoType type, Color color) {
+        tetromino = Tetromino.of(position, type, color);
+    }
+
     public Position[] position() {
         return tetromino.all();
+    }
+
+    public Position pivot() {
+        return tetromino.getPivot();
     }
 
     public TetrominoType type() {
@@ -157,10 +171,19 @@ public class ActiveTetromino {
 
     public void reset() {
         tetromino.resetAll(
-                GameUtility.randomomisePosition(),
+                GameUtility.randomisePosition(),
                 GameUtility.randomiseType(),
                 GameUtility.randomiseColor()
         );
+    }
+
+    public void reset(Element element) {
+        Objects.requireNonNull(element);
+        tetromino.resetAll(element.position(), element.type(), element.color());
+    }
+
+    public void reset(Position position, TetrominoType type, Color color) {
+        tetromino.resetAll(position, type, color);
     }
 
     private Position computeLeftRotation(Position pivot, Position position) {

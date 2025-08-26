@@ -2,7 +2,6 @@ package com.asterexcrisys.tetris.constants;
 
 public class ResourceConstants {
 
-    public static final String ICON = "images/icon.png";
     public static final String GAME_VIEW = "views/game-view.fxml";
     public static final String LEADERBOARD_VIEW = "views/leaderboard-view.fxml";
     public static final String CREDITS_VIEW = "views/credits-view.fxml";
@@ -13,5 +12,7 @@ public class ResourceConstants {
     public static final String TWO_LINES_CLEARED_EFFECT = "audios/sound-effects/two-lines-cleared.wav";
     public static final String THREE_LINES_CLEARED_EFFECT = "audios/sound-effects/three-lines-cleared.wav";
     public static final String FOUR_LINES_CLEARED_EFFECT  = "audios/sound-effects/four-lines-cleared.wav";
+    public static final String ICON = "images/icon.png";
+    public static final String TETROMINOES = "images/tetrominoes.png";
 
 }
