@@ -1,18 +1,33 @@
 package com.asterexcrisys.tetris.controllers;
 
 import com.asterexcrisys.tetris.MainApplication;
+import com.asterexcrisys.tetris.constants.CreditsConstants;
 import com.asterexcrisys.tetris.constants.ResourceConstants;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.Objects;
 
 public final class CreditsController {
 
+    private Stage stage;
+
+    public CreditsController() {
+        stage = null;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = Objects.requireNonNull(stage);
+    }
+
     @FXML
-    private AnchorPane creditsPane;
+    private void onVisitButtonClick() {
+        MainApplication.getInstance().ifPresent(((application) -> {
+            application.getHostServices().showDocument(CreditsConstants.GITHUB_ACCOUNT);
+        }));
+    }
 
     @FXML
     private void onBackButtonClick() {
@@ -23,7 +38,8 @@ public final class CreditsController {
         } catch (IOException ignored) {
             return;
         }
-        Stage stage = (Stage) creditsPane.getScene().getWindow();
+        GameController controller = loader.getController();
+        controller.setStage(stage);
         stage.setScene(scene);
     }
 

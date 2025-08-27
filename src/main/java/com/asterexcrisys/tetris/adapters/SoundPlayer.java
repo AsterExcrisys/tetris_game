@@ -104,6 +104,11 @@ public class SoundPlayer implements Playable {
         listener.set(null);
     }
 
+    @Override
+    public void close() {
+        dispose();
+    }
+
     private void listen() {
         synchronized (listener) {
             if (listener.get() != null) {

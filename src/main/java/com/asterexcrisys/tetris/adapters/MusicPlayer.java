@@ -66,4 +66,9 @@ public class MusicPlayer implements Playable {
         player.dispose();
     }
 
+    @Override
+    public void close() {
+        dispose();
+    }
+
 }

@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class TetrisBoard {
-
-    // TODO: implement the 7-bag technique to reduce the effect of pure RNG
+public class TetrisBoard implements AutoCloseable {
 
     // TODO: assign a fixed color to each piece instead of randomising it
 
@@ -91,6 +89,7 @@ public class TetrisBoard {
         if (state != GameState.RUNNING) {
             return;
         }
+        List<MovementType> types = new ArrayList<>();
         switch (type) {
             case GO_LEFT -> {
                 if (!tetromino.canMoveLeft(board)) {
@@ -117,17 +116,24 @@ public class TetrisBoard {
                 }
             }
             case ROTATE_LEFT -> {
-                if (!tetromino.canRotateLeft(board)) {
+                if (tetromino.canRotateLeft(board)) {
+                    break;
+                }
+                if (!tetromino.canKickLeft(board, types)) {
                     return;
                 }
             }
             case ROTATE_RIGHT -> {
-                if (!tetromino.canRotateRight(board)) {
+                if (tetromino.canRotateRight(board)) {
+                    break;
+                }
+                if (!tetromino.canKickRight(board, types)) {
                     return;
                 }
             }
         }
-        updateTetromino(type);
+        types.add(type);
+        updateTetromino(types);
         switch (type) {
             case GO_LEFT, GO_RIGHT, ROTATE_LEFT, ROTATE_RIGHT -> soundPlayer.play(SoundEffectType.TETROMINO_MOVED);
         }
@@ -170,12 +176,19 @@ public class TetrisBoard {
         state = GameState.IDLE;
     }
 
-    private void updateTetromino(MovementType type) {
+    @Override
+    public void close() {
+        reset();
+        musicPlayer.dispose();
+        soundPlayer.dispose();
+    }
+
+    private void updateTetromino(List<MovementType> types) {
         for (Position position : tetromino.position()) {
             board[position.x()][position.y()].setType(CellType.EMPTY);
             board[position.x()][position.y()].setColor(Color.TRANSPARENT);
         }
-        if (type == MovementType.DROP_LOCK) {
+        if (types.getFirst() == MovementType.DROP_LOCK && types.size() == 1) {
             tetromino.dropLock(board);
             blockTetromino();
             checkTetrisLines();
@@ -183,7 +196,9 @@ public class TetrisBoard {
             soundPlayer.play(SoundEffectType.TETROMINO_LOCKED);
             return;
         }
-        tetromino.applyMovement(type);
+        for (MovementType type : types) {
+            tetromino.applyMovement(type);
+        }
         for (Position position : tetromino.position()) {
             board[position.x()][position.y()].setType(CellType.MOVABLE);
             board[position.x()][position.y()].setColor(tetromino.color());

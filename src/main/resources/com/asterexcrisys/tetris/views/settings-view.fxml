@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.asterexcrisys.tetris.controllers.SettingsController">
+    <VBox alignment="CENTER" prefHeight="800.0" prefWidth="600.0" spacing="50.0" style="-fx-background-color: #103cd6;">
+        <Label text="SETTINGS" textFill="#c8b67f">
+            <font>
+                <Font name="System Bold Italic" size="36.0" />
+            </font>
+        </Label>
+        <ScrollPane prefHeight="400.0" prefWidth="600.0">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="600.0">
+                <VBox alignment="CENTER" prefWidth="600.0" spacing="50.0" style="-fx-background-color: #000055; -fx-border-color: #ffffff; -fx-border-width: 5;">
+                    <Label alignment="CENTER" layoutX="310.0" layoutY="610.0" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold Italic" size="24.0" />
+                        </font>
+                    </Label>
+                    <VBox alignment="CENTER" spacing="25.0">
+                        <Label text="MUSIC TRACKS" textFill="#c8b67f">
+                            <font>
+                                <Font name="System Bold Italic" size="20.0"/>
+                            </font>
+                        </Label>
+                        <HBox alignment="CENTER" spacing="50.0">
+                            <Slider fx:id="musicVolume" prefHeight="50.0" prefWidth="300.0"/>
+                            <Button alignment="CENTER" mnemonicParsing="false" fx:id="musicVolumeTestButton" onAction="#onMusicVolumeTestButtonClick" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #c8b67f;" text="Test" textFill="WHITE">
+                                <font>
+                                    <Font name="System Bold Italic" size="20.0"/>
+                                </font>
+                            </Button>
+                        </HBox>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="25.0">
+                        <Label text="SOUND EFFECTS" textFill="#c8b67f">
+                            <font>
+                                <Font name="System Bold Italic" size="20.0"/>
+                            </font>
+                        </Label>
+                        <HBox alignment="CENTER" spacing="50.0">
+                            <Slider fx:id="soundVolume" prefHeight="50.0" prefWidth="300.0"/>
+                            <Button alignment="CENTER" mnemonicParsing="false" fx:id="soundVolumeTestButton" onAction="#onSoundVolumeTestButtonClick" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #c8b67f;" text="Test" textFill="WHITE">
+                                <font>
+                                    <Font name="System Bold Italic" size="20.0"/>
+                                </font>
+                            </Button>
+                        </HBox>
+                    </VBox>
+                    <Label alignment="CENTER" layoutX="143.0" layoutY="15.0" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold Italic" size="24.0" />
+                        </font>
+                    </Label>
+                </VBox>
+            </AnchorPane>
+        </ScrollPane>
+        <HBox alignment="CENTER" spacing="50.0">
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#onSaveButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #000055;" text="Save" textFill="WHITE">
+                <font>
+                    <Font name="System Bold Italic" size="20.0" />
+                </font>
+            </Button>
+            <Button alignment="CENTER" layoutX="235.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #000055;" text="Back" textFill="WHITE">
+                <font>
+                    <Font name="System Bold Italic" size="20.0" />
+                </font>
+            </Button>
+        </HBox>
+    </VBox>
+</AnchorPane>

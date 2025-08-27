@@ -2,7 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<AnchorPane fx:id="creditsPane" prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.asterexcrisys.tetris.controllers.CreditsController">
+<AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.asterexcrisys.tetris.controllers.CreditsController">
     <VBox alignment="CENTER" prefHeight="800.0" prefWidth="600.0" spacing="50.0" style="-fx-background-color: #103cd6;">
         <Label text="CREDITS" textFill="#c8b67f">
             <font>
@@ -27,17 +27,17 @@
                             <Font name="System Bold Italic" size="24.0" />
                         </font>
                     </Label>
-                    <Label alignment="CENTER" layoutX="143.0" layoutY="193.0" text="SFX/Music Artist: None" textFill="WHITE">
+                    <Label alignment="CENTER" layoutX="143.0" layoutY="193.0" text="SFX/Music Artist: AsterExcrisys" textFill="WHITE">
                         <font>
                             <Font name="System Bold Italic" size="24.0" />
                         </font>
                     </Label>
-                    <Label alignment="CENTER" layoutX="143.0" layoutY="235.0" text="GFX/Image Artist: None" textFill="WHITE">
+                    <Label alignment="CENTER" layoutX="143.0" layoutY="235.0" text="GFX/Image Artist: AsterExcrisys" textFill="WHITE">
                         <font>
                             <Font name="System Bold Italic" size="24.0" />
                         </font>
                     </Label>
-                    <Label alignment="CENTER" layoutX="176.0" layoutY="320.0" text="Special thanks to: None " textFill="#ce2b37">
+                    <Label alignment="CENTER" layoutX="176.0" layoutY="320.0" text="Special thanks to: AsterExcrisys" textFill="#ce2b37">
                         <font>
                             <Font name="System Bold Italic" size="24.0" />
                         </font>
@@ -60,10 +60,17 @@
                 </VBox>
             </AnchorPane>
         </ScrollPane>
-        <Button alignment="CENTER" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #000055;" text="Back" textFill="WHITE">
-            <font>
-                <Font name="System Bold Italic" size="20.0" />
-            </font>
-        </Button>
+        <HBox alignment="CENTER" spacing="50.0">
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#onVisitButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #000055;" text="Visit" textFill="WHITE">
+                <font>
+                    <Font name="System Bold Italic" size="20.0" />
+                </font>
+            </Button>
+            <Button alignment="CENTER" layoutX="235.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #000055;" text="Back" textFill="WHITE">
+                <font>
+                    <Font name="System Bold Italic" size="20.0" />
+                </font>
+            </Button>
+        </HBox>
     </VBox>
 </AnchorPane>

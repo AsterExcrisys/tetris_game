@@ -1,6 +1,6 @@
 package com.asterexcrisys.tetris.adapters;
 
-public interface Playable {
+public interface Playable extends AutoCloseable {
 
     int getCycleCount();
 

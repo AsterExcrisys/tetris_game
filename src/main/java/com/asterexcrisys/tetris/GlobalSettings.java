@@ -1,5 +1,6 @@
 package com.asterexcrisys.tetris;
 
+import com.asterexcrisys.tetris.constants.SettingsConstants;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -11,8 +12,8 @@ public class GlobalSettings {
     private final AtomicReference<Double> soundVolume;
 
     public GlobalSettings() {
-        musicVolume = new AtomicReference<>(1.0);
-        soundVolume = new AtomicReference<>(1.0);
+        musicVolume = new AtomicReference<>(SettingsConstants.INITIAL_VOLUME);
+        soundVolume = new AtomicReference<>(SettingsConstants.INITIAL_VOLUME);
     }
 
     public Double getMusicVolume() {
@@ -49,6 +50,14 @@ public class GlobalSettings {
             }
         }
         return INSTANCE;
+    }
+
+    public static void clearInstance() {
+        synchronized (GlobalSettings.class) {
+            if (INSTANCE != null) {
+                INSTANCE = null;
+            }
+        }
     }
 
 }

@@ -31,11 +31,9 @@ import java.util.Objects;
 
 public final class GameController {
 
-    // TODO: add the level and point system (including higher difficulty as level advances)
+    // TODO: add a settings view to edit things such as music and audio volume
 
-    // TODO: add the tetromino preview to show the next in line
-
-    // TODO: add the tetromino hold system
+    // TODO: add the view of the held tetromino
 
     // TODO: add music and graphic effects to line collapsing and/or tetris (https://downloads.khinsider.com/game-soundtracks/album/tetris-gb)
 
@@ -63,30 +61,32 @@ public final class GameController {
     @FXML
     private Label menuLabel;
 
-    private static final Image DEFAULT_PREVIEW;
-    private static final Image TETROMINOES_PREVIEW;
-
     private final TetrisBoard game;
     private final GravityCounter counter;
     private final Pane[][] board;
     private final EventHandler<KeyEvent> handler;
+    private final Image defaultPreview;
+    private final Image spritePreview;
+    private Stage stage;
     private Timeline timeline;
-
-    static {
-        DEFAULT_PREVIEW = new Image(
-                Objects.requireNonNull(MainApplication.class.getResourceAsStream(ResourceConstants.ICON))
-        );
-        TETROMINOES_PREVIEW = new Image(
-                Objects.requireNonNull(MainApplication.class.getResourceAsStream(ResourceConstants.TETROMINOES))
-        );
-    }
 
     public GameController() {
         game = new TetrisBoard();
         counter = new GravityCounter(GameConstants.GRAVITY_TIME);
         board = new Pane[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
         handler = this::onKeyPressed;
+        defaultPreview = new Image(
+                Objects.requireNonNull(MainApplication.class.getResourceAsStream(ResourceConstants.ICON))
+        );
+        spritePreview = new Image(
+                Objects.requireNonNull(MainApplication.class.getResourceAsStream(ResourceConstants.TETROMINOES))
+        );
+        stage = null;
         timeline = null;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = Objects.requireNonNull(stage);
     }
 
     @FXML
@@ -101,7 +101,7 @@ public final class GameController {
         }
         menuPane.setVisible(false);
         previewImage.setPreserveRatio(false);
-        previewImage.setImage(DEFAULT_PREVIEW);
+        previewImage.setImage(defaultPreview);
         previewImage.setViewport(null);
     }
 
@@ -153,7 +153,27 @@ public final class GameController {
 
     @FXML
     private void onSettingsButtonClick() {
-        throw new UnsupportedOperationException("yet to be implemented");
+        if (game.state() != GameState.IDLE) {
+            gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
+            timeline.stop();
+            game.close();
+            counter.reset();
+            updateBoard();
+            updateProgress();
+            updatePreview();
+            startButton.setText("Start");
+            menuPane.setVisible(false);
+        }
+        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(ResourceConstants.SETTINGS_VIEW));
+        Scene scene;
+        try {
+            scene = new Scene(loader.load(), 600, 800);
+        } catch (IOException ignored) {
+            return;
+        }
+        SettingsController controller = loader.getController();
+        controller.setStage(stage);
+        stage.setScene(scene);
     }
 
     @FXML
@@ -166,7 +186,7 @@ public final class GameController {
         if (game.state() != GameState.IDLE) {
             gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
             timeline.stop();
-            game.reset();
+            game.close();
             counter.reset();
             updateBoard();
             updateProgress();
@@ -181,7 +201,8 @@ public final class GameController {
         } catch (IOException ignored) {
             return;
         }
-        Stage stage = (Stage) gamePane.getScene().getWindow();
+        CreditsController controller = loader.getController();
+        controller.setStage(stage);
         stage.setScene(scene);
     }
 
@@ -240,12 +261,12 @@ public final class GameController {
 
     private void updatePreview() {
         if (game.state() == GameState.IDLE) {
-            previewImage.setImage(DEFAULT_PREVIEW);
+            previewImage.setImage(defaultPreview);
             previewImage.setViewport(null);
             return;
         }
         TetrominoType type = game.queue().peek().type();
-        previewImage.setImage(TETROMINOES_PREVIEW);
+        previewImage.setImage(spritePreview);
         previewImage.setViewport(new Rectangle2D(
                 type.corner().x(),
                 type.corner().y(),
