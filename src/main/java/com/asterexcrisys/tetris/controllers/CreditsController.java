@@ -9,8 +9,12 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class CreditsController {
+
+    private static final Logger LOGGER = Logger.getLogger(CreditsController.class.getName());
 
     private Stage stage;
 
@@ -35,7 +39,8 @@ public final class CreditsController {
         Scene scene;
         try {
             scene = new Scene(loader.load(), 600, 800);
-        } catch (IOException ignored) {
+        } catch (IOException exception) {
+            LOGGER.log(Level.WARNING, exception.getMessage(), exception);
             return;
         }
         GameController controller = loader.getController();

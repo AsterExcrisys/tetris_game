@@ -1,9 +1,8 @@
 package com.asterexcrisys.tetris.types;
 
-public enum AudioState {
+public enum ConnectionState {
     IDLE,
-    PLAYING,
-    PAUSED,
-    STOPPED,
+    ACTIVE,
+    INACTIVE,
     DISPOSED
 }

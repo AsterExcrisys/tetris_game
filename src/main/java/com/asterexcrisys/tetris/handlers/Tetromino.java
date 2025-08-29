@@ -1,5 +1,7 @@
-package com.asterexcrisys.tetris.types;
+package com.asterexcrisys.tetris.handlers;
 
+import com.asterexcrisys.tetris.types.Position;
+import com.asterexcrisys.tetris.types.TetrominoType;
 import javafx.scene.paint.Color;
 import java.util.Objects;
 import java.util.function.BiFunction;

@@ -1,5 +1,7 @@
 package com.asterexcrisys.tetris.services;
 
+import com.asterexcrisys.tetris.handlers.Cell;
+import com.asterexcrisys.tetris.handlers.Tetromino;
 import com.asterexcrisys.tetris.types.*;
 import com.asterexcrisys.tetris.utilities.GameUtility;
 import javafx.scene.paint.Color;

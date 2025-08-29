@@ -2,18 +2,25 @@ package com.asterexcrisys.tetris;
 
 import com.asterexcrisys.tetris.constants.SettingsConstants;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class GlobalSettings {
 
     private static volatile GlobalSettings INSTANCE;
 
+    private final AtomicBoolean useFixedColors;
     private final AtomicReference<Double> musicVolume;
     private final AtomicReference<Double> soundVolume;
 
     public GlobalSettings() {
+        useFixedColors = new AtomicBoolean(true);
         musicVolume = new AtomicReference<>(SettingsConstants.INITIAL_VOLUME);
         soundVolume = new AtomicReference<>(SettingsConstants.INITIAL_VOLUME);
+    }
+
+    public boolean getUseFixedColors() {
+        return useFixedColors.get();
     }
 
     public Double getMusicVolume() {
@@ -22,6 +29,10 @@ public class GlobalSettings {
 
     public Double getSoundVolume() {
         return soundVolume.get();
+    }
+
+    public void setUseFixedColors(boolean useFixedColors) {
+        this.useFixedColors.set(useFixedColors);
     }
 
     public void setMusicVolume(Double musicVolume) {

@@ -17,17 +17,31 @@
                             <Font name="System Bold Italic" size="24.0" />
                         </font>
                     </Label>
+                    <VBox alignment="CENTER" spacing="50.0">
+                        <HBox alignment="CENTER" spacing="50.0">
+                            <Label text="USE FIXED COLORS" textFill="#c8b67f">
+                                <font>
+                                    <Font name="System Bold Italic" size="20.0"/>
+                                </font>
+                            </Label>
+                            <CheckBox fx:id="useFixedColors" alignment="CENTER" mnemonicParsing="false" textFill="#c8b67f">
+                                <font>
+                                    <Font size="20.0"/>
+                                </font>
+                            </CheckBox>
+                        </HBox>
+                    </VBox>
                     <VBox alignment="CENTER" spacing="25.0">
                         <Label text="MUSIC TRACKS" textFill="#c8b67f">
                             <font>
-                                <Font name="System Bold Italic" size="20.0"/>
+                                <Font name="System Bold Italic" size="20.0" />
                             </font>
                         </Label>
                         <HBox alignment="CENTER" spacing="50.0">
-                            <Slider fx:id="musicVolume" prefHeight="50.0" prefWidth="300.0"/>
-                            <Button alignment="CENTER" mnemonicParsing="false" fx:id="musicVolumeTestButton" onAction="#onMusicVolumeTestButtonClick" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #c8b67f;" text="Test" textFill="WHITE">
+                            <Slider fx:id="musicVolume" prefHeight="50.0" prefWidth="300.0" />
+                            <Button fx:id="musicVolumeTestButton" alignment="CENTER" mnemonicParsing="false" onAction="#onMusicVolumeTestButtonClick" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #c8b67f;" text="Test" textFill="WHITE">
                                 <font>
-                                    <Font name="System Bold Italic" size="20.0"/>
+                                    <Font name="System Bold Italic" size="20.0" />
                                 </font>
                             </Button>
                         </HBox>
@@ -35,14 +49,14 @@
                     <VBox alignment="CENTER" spacing="25.0">
                         <Label text="SOUND EFFECTS" textFill="#c8b67f">
                             <font>
-                                <Font name="System Bold Italic" size="20.0"/>
+                                <Font name="System Bold Italic" size="20.0" />
                             </font>
                         </Label>
                         <HBox alignment="CENTER" spacing="50.0">
-                            <Slider fx:id="soundVolume" prefHeight="50.0" prefWidth="300.0"/>
-                            <Button alignment="CENTER" mnemonicParsing="false" fx:id="soundVolumeTestButton" onAction="#onSoundVolumeTestButtonClick" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #c8b67f;" text="Test" textFill="WHITE">
+                            <Slider fx:id="soundVolume" prefHeight="50.0" prefWidth="300.0" />
+                            <Button fx:id="soundVolumeTestButton" alignment="CENTER" mnemonicParsing="false" onAction="#onSoundVolumeTestButtonClick" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #c8b67f;" text="Test" textFill="WHITE">
                                 <font>
-                                    <Font name="System Bold Italic" size="20.0"/>
+                                    <Font name="System Bold Italic" size="20.0" />
                                 </font>
                             </Button>
                         </HBox>

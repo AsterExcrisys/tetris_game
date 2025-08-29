@@ -84,6 +84,11 @@
                             <Font name="System Bold Italic" size="36.0" />
                         </font>
                     </Label>
+                    <Button layoutX="60.0" layoutY="435.0" mnemonicParsing="false" onAction="#onRegisterButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #c8b67f;" text="Register">
+                        <font>
+                            <Font name="System Bold Italic" size="20.0" />
+                        </font>
+                    </Button>
                 </VBox>
             </AnchorPane>
         </StackPane>

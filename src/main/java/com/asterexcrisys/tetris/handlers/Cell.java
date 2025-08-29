@@ -1,5 +1,6 @@
-package com.asterexcrisys.tetris.types;
+package com.asterexcrisys.tetris.handlers;
 
+import com.asterexcrisys.tetris.types.CellType;
 import javafx.scene.paint.Color;
 import java.util.Objects;
 

@@ -3,19 +3,23 @@ package com.asterexcrisys.tetris.controllers;
 import com.asterexcrisys.tetris.MainApplication;
 import com.asterexcrisys.tetris.constants.GameConstants;
 import com.asterexcrisys.tetris.constants.ResourceConstants;
+import com.asterexcrisys.tetris.handlers.Cell;
 import com.asterexcrisys.tetris.services.GravityCounter;
+import com.asterexcrisys.tetris.services.RankingManager;
 import com.asterexcrisys.tetris.services.TetrisBoard;
 import com.asterexcrisys.tetris.types.*;
+import com.asterexcrisys.tetris.types.Record;
 import com.asterexcrisys.tetris.utilities.GameUtility;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -28,14 +32,15 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class GameController {
 
-    // TODO: add a settings view to edit things such as music and audio volume
+    // TODO: add a view of the currently held tetromino
 
-    // TODO: add the view of the held tetromino
-
-    // TODO: add music and graphic effects to line collapsing and/or tetris (https://downloads.khinsider.com/game-soundtracks/album/tetris-gb)
+    // TODO: add sound and graphical effects when one or more lines are cleared
 
     @FXML
     private AnchorPane gamePane;
@@ -61,12 +66,16 @@ public final class GameController {
     @FXML
     private Label menuLabel;
 
+    private static final Logger LOGGER = Logger.getLogger(GameController.class.getName());
+
     private final TetrisBoard game;
     private final GravityCounter counter;
     private final Pane[][] board;
     private final EventHandler<KeyEvent> handler;
     private final Image defaultPreview;
     private final Image spritePreview;
+    private final RankingManager manager;
+    private final TextInputDialog dialog;
     private Stage stage;
     private Timeline timeline;
 
@@ -76,11 +85,13 @@ public final class GameController {
         board = new Pane[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
         handler = this::onKeyPressed;
         defaultPreview = new Image(
-                Objects.requireNonNull(MainApplication.class.getResourceAsStream(ResourceConstants.ICON))
+                Objects.requireNonNull(MainApplication.class.getResourceAsStream(ResourceConstants.ICON_IMAGE))
         );
         spritePreview = new Image(
-                Objects.requireNonNull(MainApplication.class.getResourceAsStream(ResourceConstants.TETROMINOES))
+                Objects.requireNonNull(MainApplication.class.getResourceAsStream(ResourceConstants.TETROMINOES_IMAGE))
         );
+        manager = new RankingManager();
+        dialog = new TextInputDialog();
         stage = null;
         timeline = null;
     }
@@ -103,11 +114,22 @@ public final class GameController {
         previewImage.setPreserveRatio(false);
         previewImage.setImage(defaultPreview);
         previewImage.setViewport(null);
+        dialog.setTitle(GameConstants.DIALOG_TITLE);
+        dialog.setHeaderText(GameConstants.DIALOG_HEADER);
+        dialog.setContentText(GameConstants.DIALOG_CONTENT);
+        BooleanBinding isInvalid = Bindings.createBooleanBinding(
+                () -> GameUtility.validateIdentifier(dialog.getEditor().getText()),
+                dialog.getEditor().textProperty()
+        ).not();
+        dialog.getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(isInvalid);
     }
 
     @FXML
     private void onStartButtonClick() {
         if (game.state() != GameState.IDLE) {
+            if (game.state() == GameState.DISPOSED) {
+                return;
+            }
             gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
             timeline.stop();
             game.reset();
@@ -153,7 +175,7 @@ public final class GameController {
 
     @FXML
     private void onSettingsButtonClick() {
-        if (game.state() != GameState.IDLE) {
+        if (game.state() != GameState.IDLE && game.state() != GameState.DISPOSED) {
             gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
             timeline.stop();
             game.close();
@@ -161,6 +183,7 @@ public final class GameController {
             updateBoard();
             updateProgress();
             updatePreview();
+            manager.close();
             startButton.setText("Start");
             menuPane.setVisible(false);
         }
@@ -168,7 +191,8 @@ public final class GameController {
         Scene scene;
         try {
             scene = new Scene(loader.load(), 600, 800);
-        } catch (IOException ignored) {
+        } catch (IOException exception) {
+            LOGGER.log(Level.WARNING, exception.getMessage(), exception);
             return;
         }
         SettingsController controller = loader.getController();
@@ -178,12 +202,7 @@ public final class GameController {
 
     @FXML
     private void onLeaderboardButtonClick() {
-        throw new UnsupportedOperationException("yet to be implemented");
-    }
-
-    @FXML
-    private void onCreditsButtonClick() {
-        if (game.state() != GameState.IDLE) {
+        if (game.state() != GameState.IDLE && game.state() != GameState.DISPOSED) {
             gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
             timeline.stop();
             game.close();
@@ -191,6 +210,34 @@ public final class GameController {
             updateBoard();
             updateProgress();
             updatePreview();
+            manager.close();
+            startButton.setText("Start");
+            menuPane.setVisible(false);
+        }
+        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(ResourceConstants.LEADERBOARD_VIEW));
+        Scene scene;
+        try {
+            scene = new Scene(loader.load(), 600, 800);
+        } catch (IOException exception) {
+            LOGGER.log(Level.WARNING, exception.getMessage(), exception);
+            return;
+        }
+        LeaderboardController controller = loader.getController();
+        controller.setStage(stage);
+        stage.setScene(scene);
+    }
+
+    @FXML
+    private void onCreditsButtonClick() {
+        if (game.state() != GameState.IDLE && game.state() != GameState.DISPOSED) {
+            gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
+            timeline.stop();
+            game.close();
+            counter.reset();
+            updateBoard();
+            updateProgress();
+            updatePreview();
+            manager.close();
             startButton.setText("Start");
             menuPane.setVisible(false);
         }
@@ -198,7 +245,8 @@ public final class GameController {
         Scene scene;
         try {
             scene = new Scene(loader.load(), 600, 800);
-        } catch (IOException ignored) {
+        } catch (IOException exception) {
+            LOGGER.log(Level.WARNING, exception.getMessage(), exception);
             return;
         }
         CreditsController controller = loader.getController();
@@ -206,7 +254,34 @@ public final class GameController {
         stage.setScene(scene);
     }
 
+    @FXML
+    private void onRegisterButtonClick() {
+        if (!menuPane.isVisible()) {
+            return;
+        }
+        if (game.state() != GameState.IDLE && game.state() != GameState.PAUSED) {
+            return;
+        }
+        Optional<String> result = dialog.showAndWait();
+        if (result.isEmpty()) {
+            return;
+        }
+        if (!GameUtility.validateIdentifier(result.get())) {
+            return;
+        }
+        // TODO: make sure to get the correct level and score before they reset in the 'OVER' game state
+        manager.putRecord(Record.of(
+                0,
+                result.get(),
+                game.tracker().level(),
+                game.tracker().score()
+        ));
+    }
+
     private void onKeyPressed(KeyEvent event) {
+        if (game.state() == GameState.DISPOSED) {
+            return;
+        }
         if (event.getCode() == KeyCode.P) {
             switch (game.state()) {
                 case RUNNING -> {
@@ -237,7 +312,6 @@ public final class GameController {
         event.consume();
     }
 
-    // TODO: fix this to make it more fair
     private int computeDifficulty() {
         int percentage = Math.max(10, Math.min(100, game.tracker().level()));
         return GameConstants.GRAVITY_TIME - ((GameConstants.GRAVITY_TIME * (percentage - 10)) / 100);
@@ -260,7 +334,7 @@ public final class GameController {
     }
 
     private void updatePreview() {
-        if (game.state() == GameState.IDLE) {
+        if (game.state() == GameState.IDLE || game.state() == GameState.DISPOSED) {
             previewImage.setImage(defaultPreview);
             previewImage.setViewport(null);
             return;

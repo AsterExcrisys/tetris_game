@@ -2,6 +2,7 @@ package com.asterexcrisys.tetris.services;
 
 import com.asterexcrisys.tetris.GlobalSettings;
 import com.asterexcrisys.tetris.constants.GameConstants;
+import com.asterexcrisys.tetris.handlers.Cell;
 import com.asterexcrisys.tetris.types.*;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
@@ -11,9 +12,7 @@ import java.util.stream.IntStream;
 
 public class TetrisBoard implements AutoCloseable {
 
-    // TODO: assign a fixed color to each piece instead of randomising it
-
-    // TODO: consider adding listeners for certain events
+    // TODO: consider adding a listener interface for the 'OVER' game state event
 
     private final Cell[][] board;
     private final TetrominoQueue queue;
@@ -25,7 +24,7 @@ public class TetrisBoard implements AutoCloseable {
 
     public TetrisBoard() {
         board = new Cell[GameConstants.BOARD_HEIGHT * 2][GameConstants.BOARD_WIDTH];
-        queue = new TetrominoQueue();
+        queue = new TetrominoQueue(GlobalSettings.getInstance().getUseFixedColors());
         tetromino = new ActiveTetromino(queue.poll());
         tracker = new ProgressTracker(GameConstants.INITIAL_LEVEL);
         musicPlayer = new AudioPlayer(AudioType.MUSIC_TRACK);
@@ -140,6 +139,9 @@ public class TetrisBoard implements AutoCloseable {
     }
 
     public void holdTetromino() {
+        if (state != GameState.RUNNING) {
+            return;
+        }
         if (!queue.canHold()) {
             return;
         }
@@ -160,7 +162,7 @@ public class TetrisBoard implements AutoCloseable {
     }
 
     public void reset() {
-        if (state == GameState.IDLE) {
+        if (state == GameState.IDLE || state == GameState.DISPOSED) {
             return;
         }
         for (int i = 0; i < board.length; i++) {
@@ -178,9 +180,13 @@ public class TetrisBoard implements AutoCloseable {
 
     @Override
     public void close() {
+        if (state == GameState.DISPOSED) {
+            return;
+        }
         reset();
         musicPlayer.dispose();
         soundPlayer.dispose();
+        state = GameState.DISPOSED;
     }
 
     private void updateTetromino(List<MovementType> types) {

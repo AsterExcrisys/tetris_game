@@ -4,5 +4,6 @@ public enum GameState {
     IDLE,
     RUNNING,
     PAUSED,
-    OVER
+    OVER,
+    DISPOSED
 }

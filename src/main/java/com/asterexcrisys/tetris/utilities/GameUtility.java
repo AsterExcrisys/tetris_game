@@ -6,16 +6,19 @@ import com.asterexcrisys.tetris.types.Position;
 import com.asterexcrisys.tetris.types.TetrominoType;
 import javafx.scene.paint.Color;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public final class GameUtility {
 
     private static final Random RANDOM;
+    private static final Pattern IDENTIFIER_PATTERN;
 
     static {
         RANDOM = new Random();
+        IDENTIFIER_PATTERN = Pattern.compile("[a-zA-Z0-9_]{5,20}");
     }
 
-    public static List<Element> shuffleTetrominos() {
+    public static List<Element> shuffleTetrominoes(boolean useFixedColors) {
         TetrominoType[] types = TetrominoType.values();
         for (int i = 0; i < types.length; i++) {
             int index = RANDOM.nextInt(types.length);
@@ -24,8 +27,14 @@ public final class GameUtility {
             types[i] = type;
         }
         List<Element> list = new ArrayList<>();
-        for (TetrominoType type : types) {
-            list.add(Element.of(randomisePosition(), type, randomiseColor()));
+        if (useFixedColors) {
+            for (TetrominoType type : types) {
+                list.add(Element.of(randomisePosition(), type, type.color()));
+            }
+        } else {
+            for (TetrominoType type : types) {
+                list.add(Element.of(randomisePosition(), type, randomiseColor()));
+            }
         }
         return list;
     }
@@ -45,6 +54,13 @@ public final class GameUtility {
     public static Color randomiseColor() {
         Color[] colors = GameConstants.SUPPORTED_COLORS;
         return colors[RANDOM.nextInt(colors.length)];
+    }
+
+    public static boolean validateIdentifier(String identifier) {
+        if (identifier == null || identifier.isBlank()) {
+            return false;
+        }
+        return IDENTIFIER_PATTERN.matcher(identifier).matches();
     }
 
     public static String toRGBA(Color color) {

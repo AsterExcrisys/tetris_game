@@ -8,15 +8,17 @@ import java.util.Queue;
 
 public class TetrominoQueue {
 
+    private final boolean useFixedColors;
     private final Queue<Element> queue;
     private Element slot;
     private boolean canHold;
 
-    public TetrominoQueue() {
+    public TetrominoQueue(boolean useFixedColors) {
+        this.useFixedColors = useFixedColors;
         queue = new LinkedList<>();
         slot = null;
         canHold = true;
-        queue.addAll(GameUtility.shuffleTetrominos());
+        queue.addAll(GameUtility.shuffleTetrominoes(useFixedColors));
     }
 
     public boolean canHold() {
@@ -31,7 +33,7 @@ public class TetrominoQueue {
         canHold = true;
         Element element = queue.poll();
         if (queue.isEmpty()) {
-            queue.addAll(GameUtility.shuffleTetrominos());
+            queue.addAll(GameUtility.shuffleTetrominoes(useFixedColors));
         }
         return element;
     }
@@ -58,7 +60,7 @@ public class TetrominoQueue {
         queue.clear();
         slot = null;
         canHold = true;
-        queue.addAll(GameUtility.shuffleTetrominos());
+        queue.addAll(GameUtility.shuffleTetrominoes(useFixedColors));
     }
 
 }

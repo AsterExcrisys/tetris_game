@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class AudioPlayer {
+public class AudioPlayer implements AutoCloseable {
 
     // TODO: replace MediaPlayer with AudioClip for sound effects
 
@@ -43,7 +43,7 @@ public class AudioPlayer {
     }
 
     public double getVolume() {
-        if (state == AudioState.IDLE) {
+        if (state == AudioState.IDLE || state == AudioState.DISPOSED) {
             return -1.0;
         }
         if (audio == null) {
@@ -53,7 +53,7 @@ public class AudioPlayer {
     }
 
     public void setVolume(double volume) {
-        if (state == AudioState.IDLE) {
+        if (state == AudioState.IDLE || state == AudioState.DISPOSED) {
             return;
         }
         if (audio == null) {
@@ -63,6 +63,9 @@ public class AudioPlayer {
     }
 
     public void setGlobalVolume(double volume) {
+        if (state == AudioState.DISPOSED) {
+            return;
+        }
         for (Playable player : audios.values()) {
             player.setVolume(volume);
         }
@@ -75,7 +78,6 @@ public class AudioPlayer {
         if (audio == null || !audios.containsKey(audio)) {
             return;
         }
-        state = AudioState.PLAYING;
         this.audio = audio;
         audios.get(this.audio).setListener(() -> {
             if (state != AudioState.PLAYING || audios.get(this.audio).getCycleCount() == MediaPlayer.INDEFINITE) {
@@ -87,6 +89,7 @@ public class AudioPlayer {
             this.audio = null;
         });
         audios.get(this.audio).play();
+        state = AudioState.PLAYING;
     }
 
     public void play() {
@@ -96,8 +99,8 @@ public class AudioPlayer {
         if (audio == null) {
             return;
         }
-        state = AudioState.PLAYING;
         audios.get(audio).play();
+        state = AudioState.PLAYING;
     }
 
     public void pause() {
@@ -107,8 +110,8 @@ public class AudioPlayer {
         if (audio == null) {
             return;
         }
-        state = AudioState.PAUSED;
         audios.get(audio).pause();
+        state = AudioState.PAUSED;
     }
 
     public void resume() {
@@ -118,43 +121,51 @@ public class AudioPlayer {
         if (audio == null) {
             return;
         }
-        state = AudioState.PLAYING;
         audios.get(audio).play();
+        state = AudioState.PLAYING;
     }
 
     public void stop() {
-        if (state == AudioState.IDLE || state == AudioState.STOPPED) {
+        if (state == AudioState.IDLE || state == AudioState.STOPPED || state == AudioState.DISPOSED) {
             return;
         }
         if (audio == null) {
             return;
         }
-        state = AudioState.STOPPED;
         audios.get(audio).stop();
+        state = AudioState.STOPPED;
     }
 
     public void reset() {
-        if (state == AudioState.IDLE) {
+        if (state == AudioState.IDLE || state == AudioState.DISPOSED) {
             return;
         }
         if (audio == null) {
             return;
         }
-        state = AudioState.IDLE;
         audios.get(audio).stop();
         audios.get(audio).setListener(null);
+        state = AudioState.IDLE;
         audio = null;
     }
 
     public void dispose() {
-        state = AudioState.IDLE;
-        audio = null;
+        if (state == AudioState.DISPOSED) {
+            return;
+        }
         for (Playable player : audios.values()) {
             player.stop();
             player.setListener(null);
             player.dispose();
         }
         audios.clear();
+        state = AudioState.DISPOSED;
+        audio = null;
+    }
+
+    @Override
+    public void close() {
+        dispose();
     }
 
 }

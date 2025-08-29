@@ -8,14 +8,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class SettingsController {
+
+    @FXML
+    private CheckBox useFixedColors;
 
     @FXML
     private Slider musicVolume;
@@ -28,6 +34,8 @@ public final class SettingsController {
 
     @FXML
     private Button soundVolumeTestButton;
+
+    private static final Logger LOGGER = Logger.getLogger(SettingsController.class.getName());
 
     private final GlobalSettings settings;
     private final MediaPlayer player;
@@ -52,6 +60,7 @@ public final class SettingsController {
 
     @FXML
     private void initialize() {
+        useFixedColors.setSelected(settings.getUseFixedColors());
         musicVolume.setMin(0.0);
         musicVolume.setMax(1.0);
         musicVolume.setValue(settings.getMusicVolume());
@@ -66,24 +75,27 @@ public final class SettingsController {
             return;
         }
         if (musicState != AudioState.IDLE) {
-            musicState = AudioState.IDLE;
+            if (musicState == AudioState.DISPOSED) {
+                return;
+            }
             player.stop();
             player.setOnEndOfMedia(null);
+            musicState = AudioState.IDLE;
             musicVolumeTestButton.setText("Test");
             return;
         }
-        musicState = AudioState.PLAYING;
         player.setVolume(musicVolume.getValue());
         player.setOnEndOfMedia(() -> {
             if (musicState != AudioState.PLAYING) {
                 return;
             }
-            musicState = AudioState.IDLE;
             player.stop();
             player.setOnEndOfMedia(null);
+            musicState = AudioState.IDLE;
             musicVolumeTestButton.setText("Test");
         });
         player.play();
+        musicState = AudioState.PLAYING;
         musicVolumeTestButton.setText("Stop");
     }
 
@@ -93,48 +105,53 @@ public final class SettingsController {
             return;
         }
         if (soundState != AudioState.IDLE) {
-            soundState = AudioState.IDLE;
+            if (soundState == AudioState.DISPOSED) {
+                return;
+            }
             player.stop();
             player.setOnEndOfMedia(null);
+            soundState = AudioState.IDLE;
             soundVolumeTestButton.setText("Test");
             return;
         }
-        soundState = AudioState.PLAYING;
         player.setVolume(musicVolume.getValue());
         player.setOnEndOfMedia(() -> {
             if (soundState != AudioState.PLAYING) {
                 return;
             }
-            soundState = AudioState.IDLE;
             player.stop();
             player.setOnEndOfMedia(null);
+            soundState = AudioState.IDLE;
             soundVolumeTestButton.setText("Test");
         });
         player.play();
+        soundState = AudioState.PLAYING;
         soundVolumeTestButton.setText("Stop");
     }
 
     @FXML
     private void onSaveButtonClick() {
-        if (musicState != AudioState.IDLE || soundState != AudioState.IDLE) {
-            musicState = AudioState.IDLE;
-            soundState = AudioState.IDLE;
+        if ((musicState != AudioState.IDLE && musicState != AudioState.DISPOSED) || (soundState != AudioState.IDLE && soundState != AudioState.DISPOSED)) {
             player.stop();
             player.setOnEndOfMedia(null);
+            musicState = AudioState.IDLE;
+            soundState = AudioState.IDLE;
             musicVolumeTestButton.setText("Test");
             soundVolumeTestButton.setText("Test");
         }
+        settings.setUseFixedColors(useFixedColors.isSelected());
         settings.setMusicVolume(musicVolume.getValue());
         settings.setSoundVolume(soundVolume.getValue());
     }
 
     @FXML
     private void onBackButtonClick() {
-        if (musicState != AudioState.IDLE || soundState != AudioState.IDLE) {
-            musicState = AudioState.IDLE;
-            soundState = AudioState.IDLE;
+        if ((musicState != AudioState.IDLE && musicState != AudioState.DISPOSED) || (soundState != AudioState.IDLE && soundState != AudioState.DISPOSED)) {
             player.stop();
             player.setOnEndOfMedia(null);
+            player.dispose();
+            musicState = AudioState.DISPOSED;
+            soundState = AudioState.DISPOSED;
             musicVolumeTestButton.setText("Test");
             soundVolumeTestButton.setText("Test");
         }
@@ -142,7 +159,8 @@ public final class SettingsController {
         Scene scene;
         try {
             scene = new Scene(loader.load(), 600, 800);
-        } catch (IOException ignored) {
+        } catch (IOException exception) {
+            LOGGER.log(Level.WARNING, exception.getMessage(), exception);
             return;
         }
         GameController controller = loader.getController();

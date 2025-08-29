@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.asterexcrisys.tetris.controllers.LeaderboardController">
+    <VBox alignment="CENTER" prefHeight="800.0" prefWidth="600.0" spacing="50.0" style="-fx-background-color: #103cd6;">
+        <Label text="LEADERBOARD" textFill="#c8b67f">
+            <font>
+                <Font name="System Bold Italic" size="36.0" />
+            </font>
+        </Label>
+        <ScrollPane prefHeight="400.0" prefWidth="600.0">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="600.0">
+                <TableView fx:id="leaderboardTable" prefWidth="600.0" style="-fx-background-color: #000055;">
+                    <columns>
+                        <TableColumn fx:id="rankColumn" editable="false" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" resizable="false" style="-fx-background-color: #c8b67f; -fx-border-color: #ffffff;" text="Rank" />
+                        <TableColumn fx:id="playerColumn" editable="false" maxWidth="230.0" minWidth="230.0" prefWidth="230.0" resizable="false" style="-fx-background-color: #c8b67f; -fx-border-color: #ffffff;" text="Player" />
+                        <TableColumn fx:id="levelColumn" editable="false" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" resizable="false" style="-fx-background-color: #c8b67f; -fx-border-color: #ffffff;" text="Level" />
+                        <TableColumn fx:id="scoreColumn" editable="false" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" resizable="false" style="-fx-background-color: #c8b67f; -fx-border-color: #ffffff;" text="Score" />
+                    </columns>
+                </TableView>
+            </AnchorPane>
+        </ScrollPane>
+        <HBox alignment="CENTER" spacing="50.0">
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#onUpdateButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #000055;" text="Update" textFill="WHITE">
+                <font>
+                    <Font name="System Bold Italic" size="20.0" />
+                </font>
+            </Button>
+            <Button alignment="CENTER" layoutX="235.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #000055;" text="Back" textFill="WHITE">
+                <font>
+                    <Font name="System Bold Italic" size="20.0" />
+                </font>
+            </Button>
+        </HBox>
+    </VBox>
+</AnchorPane>
