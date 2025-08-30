@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class GlobalSettings {
+public final class GlobalSettings {
 
     private static volatile GlobalSettings INSTANCE;
 
@@ -13,7 +13,7 @@ public class GlobalSettings {
     private final AtomicReference<Double> musicVolume;
     private final AtomicReference<Double> soundVolume;
 
-    public GlobalSettings() {
+    private GlobalSettings() {
         useFixedColors = new AtomicBoolean(true);
         musicVolume = new AtomicReference<>(SettingsConstants.INITIAL_VOLUME);
         soundVolume = new AtomicReference<>(SettingsConstants.INITIAL_VOLUME);
