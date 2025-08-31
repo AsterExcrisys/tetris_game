@@ -25,7 +25,7 @@ public final class GlobalSettings {
     private final AtomicReference<Double> soundVolume;
 
     private GlobalSettings() {
-        converter = new JsonConverter<>(ResourceConstants.CONFIGURATION_FILE);
+        converter = new JsonConverter<>(ResourceConstants.SETTINGS_CONFIGURATION);
         Configuration configuration;
         try {
             configuration = converter.deserialize(Configuration.class);
