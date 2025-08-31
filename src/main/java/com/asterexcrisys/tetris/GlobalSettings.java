@@ -1,22 +1,41 @@
 package com.asterexcrisys.tetris;
 
+import com.asterexcrisys.tetris.constants.ResourceConstants;
 import com.asterexcrisys.tetris.constants.SettingsConstants;
+import com.asterexcrisys.tetris.handlers.Converter;
+import com.asterexcrisys.tetris.handlers.JsonConverter;
+import com.asterexcrisys.tetris.utilities.GlobalUtility;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class GlobalSettings {
 
+    private static final Logger LOGGER = Logger.getLogger(GlobalSettings.class.getName());
     private static volatile GlobalSettings INSTANCE;
 
+    private final Converter<Configuration> converter;
     private final AtomicBoolean useFixedColors;
     private final AtomicReference<Double> musicVolume;
     private final AtomicReference<Double> soundVolume;
 
     private GlobalSettings() {
-        useFixedColors = new AtomicBoolean(true);
-        musicVolume = new AtomicReference<>(SettingsConstants.INITIAL_VOLUME);
-        soundVolume = new AtomicReference<>(SettingsConstants.INITIAL_VOLUME);
+        converter = new JsonConverter<>(ResourceConstants.CONFIGURATION_FILE);
+        Configuration configuration;
+        try {
+            configuration = converter.deserialize(Configuration.class);
+        } catch (IOException exception) {
+            LOGGER.log(Level.WARNING, exception.getMessage(), exception);
+            configuration = new Configuration();
+        }
+        useFixedColors = new AtomicBoolean(configuration.useFixedColors());
+        musicVolume = new AtomicReference<>(configuration.musicVolume());
+        soundVolume = new AtomicReference<>(configuration.soundVolume());
     }
 
     public boolean getUseFixedColors() {
@@ -51,6 +70,15 @@ public final class GlobalSettings {
         this.soundVolume.set(soundVolume);
     }
 
+    public void save() {
+        Configuration configuration = Configuration.of(useFixedColors.get(), musicVolume.get(), soundVolume.get());
+        try {
+            converter.serialize(configuration);
+        } catch (IOException exception) {
+            LOGGER.log(Level.WARNING, exception.getMessage(), exception);
+        }
+    }
+
     public static GlobalSettings getInstance() {
         if (INSTANCE != null) {
             return INSTANCE;
@@ -69,6 +97,33 @@ public final class GlobalSettings {
                 INSTANCE = null;
             }
         }
+    }
+
+    public record Configuration(
+            @JsonProperty(value = "use_fixed_colors") Boolean useFixedColors,
+            @JsonProperty(value = "music_volume") Double musicVolume,
+            @JsonProperty(value = "sound_volume") Double soundVolume
+    ) {
+
+        public Configuration() {
+            this(SettingsConstants.INITIAL_OPTION, SettingsConstants.INITIAL_VOLUME, SettingsConstants.INITIAL_VOLUME);
+        }
+
+        @JsonCreator
+        public Configuration(
+                @JsonProperty(value = "use_fixed_colors") Boolean useFixedColors,
+                @JsonProperty(value = "music_volume") Double musicVolume,
+                @JsonProperty(value = "sound_volume") Double soundVolume
+        ) {
+            this.useFixedColors = Objects.requireNonNullElse(useFixedColors, SettingsConstants.INITIAL_OPTION);
+            this.musicVolume = GlobalUtility.clampVolume(Objects.requireNonNullElse(musicVolume, SettingsConstants.INITIAL_VOLUME));
+            this.soundVolume = GlobalUtility.clampVolume(Objects.requireNonNullElse(soundVolume, SettingsConstants.INITIAL_VOLUME));
+        }
+
+        public static Configuration of(Boolean useFixedColors, Double musicVolume, Double soundVolume) {
+            return new Configuration(useFixedColors, musicVolume, soundVolume);
+        }
+
     }
 
 }

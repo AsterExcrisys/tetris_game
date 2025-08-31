@@ -16,6 +16,7 @@ public final class ResourceConstants {
     public static final String TEST_AUDIO = "audios/test.wav";
     public static final String ICON_IMAGE = "images/icon.png";
     public static final String TETROMINOES_IMAGE = "images/tetrominoes.png";
+    public static final String CONFIGURATION_FILE = "data/configuration.json";
     public static final String LEADERBOARD_DATABASE = "data/leaderboard.db";
 
 }

@@ -12,4 +12,8 @@ public final class GlobalUtility {
         return now.format(formatter);
     }
 
+    public static double clampVolume(double volume) {
+        return Math.max(0.0, Math.min(1.0, volume));
+    }
+
 }

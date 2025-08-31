@@ -142,6 +142,7 @@ public final class SettingsController {
         settings.setUseFixedColors(useFixedColors.isSelected());
         settings.setMusicVolume(musicVolume.getValue());
         settings.setSoundVolume(soundVolume.getValue());
+        settings.save();
     }
 
     @FXML
