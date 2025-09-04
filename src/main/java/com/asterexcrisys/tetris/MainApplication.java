@@ -4,8 +4,10 @@ import com.asterexcrisys.tetris.constants.GlobalConstants;
 import com.asterexcrisys.tetris.constants.ResourceConstants;
 import com.asterexcrisys.tetris.constants.WindowConstants;
 import com.asterexcrisys.tetris.controllers.GameController;
+import com.asterexcrisys.tetris.handlers.ExceptionHandler;
 import com.asterexcrisys.tetris.utilities.GlobalUtility;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -25,6 +27,11 @@ public final class MainApplication extends Application {
 
     public MainApplication() {
         INSTANCE = this;
+    }
+
+    @Override
+    public void init() {
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
     }
 
     @Override
@@ -54,6 +61,7 @@ public final class MainApplication extends Application {
             launch(arguments);
         } catch (Exception exception) {
             LOGGER.log(Level.SEVERE, exception.getMessage(), exception);
+            Platform.exit();
             System.exit(1);
         }
     }

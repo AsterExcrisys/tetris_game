@@ -122,6 +122,7 @@ public final class GameController {
                 dialog.getEditor().textProperty()
         ).not();
         dialog.getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(isInvalid);
+        dialog.setResizable(false);
     }
 
     @FXML

@@ -16,4 +16,12 @@ public final class GlobalUtility {
         return Math.max(0.0, Math.min(1.0, volume));
     }
 
+    public static String getStackTrace(Throwable throwable) {
+        StringBuilder builder = new StringBuilder();
+        for (StackTraceElement element : throwable.getStackTrace()) {
+            builder.append(element.toString()).append("\n");
+        }
+        return builder.toString();
+    }
+
 }
