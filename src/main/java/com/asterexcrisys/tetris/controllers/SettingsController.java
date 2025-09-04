@@ -4,21 +4,27 @@ import com.asterexcrisys.tetris.GlobalSettings;
 import com.asterexcrisys.tetris.MainApplication;
 import com.asterexcrisys.tetris.constants.ResourceConstants;
 import com.asterexcrisys.tetris.types.AudioState;
+import com.asterexcrisys.tetris.types.MusicTrackType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class SettingsController {
+
+    @FXML
+    private ComboBox<String> musicTrackChoice;
 
     @FXML
     private CheckBox useFixedColors;
@@ -60,6 +66,8 @@ public final class SettingsController {
 
     @FXML
     private void initialize() {
+        musicTrackChoice.getItems().setAll(Arrays.stream(MusicTrackType.values()).map(MusicTrackType::name).toList());
+        musicTrackChoice.getSelectionModel().select(settings.getMusicTrack().name());
         useFixedColors.setSelected(settings.getUseFixedColors());
         musicVolume.setMin(0.0);
         musicVolume.setMax(1.0);
@@ -139,6 +147,7 @@ public final class SettingsController {
             musicVolumeTestButton.setText("Test");
             soundVolumeTestButton.setText("Test");
         }
+        settings.setMusicTrack(MusicTrackType.valueOf(musicTrackChoice.getSelectionModel().getSelectedItem()));
         settings.setUseFixedColors(useFixedColors.isSelected());
         settings.setMusicVolume(musicVolume.getValue());
         settings.setSoundVolume(soundVolume.getValue());

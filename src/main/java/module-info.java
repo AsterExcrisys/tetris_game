@@ -11,6 +11,7 @@ module com.asterexcrisys.tetris {
     requires com.fasterxml.jackson.databind;
     exports com.asterexcrisys.tetris;
     exports com.asterexcrisys.tetris.controllers;
+    exports com.asterexcrisys.tetris.types;
     opens com.asterexcrisys.tetris to javafx.fxml, com.fasterxml.jackson.databind;
     opens com.asterexcrisys.tetris.controllers to javafx.fxml;
 }

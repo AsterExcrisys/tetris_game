@@ -17,16 +17,26 @@
                             <Font name="System Bold Italic" size="24.0" />
                         </font>
                     </Label>
-                    <VBox alignment="CENTER" spacing="50.0">
+                    <VBox alignment="CENTER" layoutX="15.0" layoutY="100.0" spacing="50.0">
                         <HBox alignment="CENTER" spacing="50.0">
-                            <Label text="USE FIXED COLORS" textFill="#c8b67f">
+                            <Label text="MUSIC TRACK" textFill="#c8b67f">
                                 <font>
                                     <Font name="System Bold Italic" size="20.0"/>
                                 </font>
                             </Label>
+                            <ComboBox fx:id="musicTrackChoice" prefWidth="150.0"/>
+                        </HBox>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="50.0">
+                        <HBox alignment="CENTER" spacing="50.0">
+                            <Label text="USE FIXED COLORS" textFill="#c8b67f">
+                                <font>
+                                    <Font name="System Bold Italic" size="20.0" />
+                                </font>
+                            </Label>
                             <CheckBox fx:id="useFixedColors" alignment="CENTER" mnemonicParsing="false" textFill="#c8b67f">
                                 <font>
-                                    <Font size="20.0"/>
+                                    <Font size="20.0" />
                                 </font>
                             </CheckBox>
                         </HBox>

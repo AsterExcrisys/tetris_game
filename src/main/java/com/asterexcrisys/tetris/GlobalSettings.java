@@ -2,8 +2,9 @@ package com.asterexcrisys.tetris;
 
 import com.asterexcrisys.tetris.constants.ResourceConstants;
 import com.asterexcrisys.tetris.constants.SettingsConstants;
-import com.asterexcrisys.tetris.handlers.Converter;
-import com.asterexcrisys.tetris.handlers.JsonConverter;
+import com.asterexcrisys.tetris.converters.Converter;
+import com.asterexcrisys.tetris.converters.JsonConverter;
+import com.asterexcrisys.tetris.types.MusicTrackType;
 import com.asterexcrisys.tetris.utilities.GlobalUtility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,6 +21,7 @@ public final class GlobalSettings {
     private static volatile GlobalSettings INSTANCE;
 
     private final Converter<Configuration> converter;
+    private final AtomicReference<MusicTrackType> musicTrack;
     private final AtomicBoolean useFixedColors;
     private final AtomicReference<Double> musicVolume;
     private final AtomicReference<Double> soundVolume;
@@ -33,9 +35,14 @@ public final class GlobalSettings {
             LOGGER.log(Level.WARNING, exception.getMessage(), exception);
             configuration = new Configuration();
         }
+        musicTrack = new AtomicReference<>(configuration.musicTrack());
         useFixedColors = new AtomicBoolean(configuration.useFixedColors());
         musicVolume = new AtomicReference<>(configuration.musicVolume());
         soundVolume = new AtomicReference<>(configuration.soundVolume());
+    }
+
+    public MusicTrackType getMusicTrack() {
+        return musicTrack.get();
     }
 
     public boolean getUseFixedColors() {
@@ -48,6 +55,10 @@ public final class GlobalSettings {
 
     public Double getSoundVolume() {
         return soundVolume.get();
+    }
+
+    public void setMusicTrack(MusicTrackType musicTrack) {
+        this.musicTrack.set(Objects.requireNonNull(musicTrack));
     }
 
     public void setUseFixedColors(boolean useFixedColors) {
@@ -71,7 +82,7 @@ public final class GlobalSettings {
     }
 
     public void save() {
-        Configuration configuration = Configuration.of(useFixedColors.get(), musicVolume.get(), soundVolume.get());
+        Configuration configuration = Configuration.of(musicTrack.get(), useFixedColors.get(), musicVolume.get(), soundVolume.get());
         try {
             converter.serialize(configuration);
         } catch (IOException exception) {
@@ -100,28 +111,31 @@ public final class GlobalSettings {
     }
 
     public record Configuration(
+            @JsonProperty(value = "music_track") MusicTrackType musicTrack,
             @JsonProperty(value = "use_fixed_colors") Boolean useFixedColors,
             @JsonProperty(value = "music_volume") Double musicVolume,
             @JsonProperty(value = "sound_volume") Double soundVolume
     ) {
 
         public Configuration() {
-            this(SettingsConstants.INITIAL_OPTION, SettingsConstants.INITIAL_VOLUME, SettingsConstants.INITIAL_VOLUME);
+            this(MusicTrackType.MAIN_THEME, SettingsConstants.INITIAL_OPTION, SettingsConstants.INITIAL_VOLUME, SettingsConstants.INITIAL_VOLUME);
         }
 
         @JsonCreator
         public Configuration(
+                @JsonProperty(value = "music_track") MusicTrackType musicTrack,
                 @JsonProperty(value = "use_fixed_colors") Boolean useFixedColors,
                 @JsonProperty(value = "music_volume") Double musicVolume,
                 @JsonProperty(value = "sound_volume") Double soundVolume
         ) {
+            this.musicTrack = Objects.requireNonNullElse(musicTrack, MusicTrackType.MAIN_THEME);
             this.useFixedColors = Objects.requireNonNullElse(useFixedColors, SettingsConstants.INITIAL_OPTION);
             this.musicVolume = GlobalUtility.clampVolume(Objects.requireNonNullElse(musicVolume, SettingsConstants.INITIAL_VOLUME));
             this.soundVolume = GlobalUtility.clampVolume(Objects.requireNonNullElse(soundVolume, SettingsConstants.INITIAL_VOLUME));
         }
 
-        public static Configuration of(Boolean useFixedColors, Double musicVolume, Double soundVolume) {
-            return new Configuration(useFixedColors, musicVolume, soundVolume);
+        public static Configuration of(MusicTrackType musicTrack, Boolean useFixedColors, Double musicVolume, Double soundVolume) {
+            return new Configuration(musicTrack, useFixedColors, musicVolume, soundVolume);
         }
 
     }

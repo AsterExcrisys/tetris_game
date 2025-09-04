@@ -6,7 +6,10 @@ import java.util.Objects;
 
 public enum MusicTrackType {
 
-    MAIN_THEME(ResourceConstants.MAIN_THEME_TRACK);
+    MAIN_THEME(ResourceConstants.MAIN_THEME_TRACK),
+    PRIMARY_THEME(ResourceConstants.PRIMARY_THEME_TRACK),
+    SECONDARY_THEME(ResourceConstants.SECONDARY_THEME_TRACK),
+    TERTIARY_THEME(ResourceConstants.TERTIARY_THEME_TRACK);
 
     private final String resource;
 

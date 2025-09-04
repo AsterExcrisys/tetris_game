@@ -11,7 +11,9 @@ public enum SoundEffectType {
     ONE_LINE_CLEARED(ResourceConstants.ONE_LINE_CLEARED_EFFECT),
     TWO_LINES_CLEARED(ResourceConstants.TWO_LINES_CLEARED_EFFECT),
     THREE_LINES_CLEARED(ResourceConstants.THREE_LINES_CLEARED_EFFECT),
-    FOUR_LINES_CLEARED(ResourceConstants.FOUR_LINES_CLEARED_EFFECT),;
+    FOUR_LINES_CLEARED(ResourceConstants.FOUR_LINES_CLEARED_EFFECT),
+    LEVEL_CLEARED(ResourceConstants.LEVEL_CLEARED_EFFECT),
+    GAME_OVER(ResourceConstants.GAME_OVER_EFFECT);
 
     private final String resource;
 

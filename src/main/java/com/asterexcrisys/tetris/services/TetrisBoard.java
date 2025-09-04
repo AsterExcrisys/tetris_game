@@ -3,6 +3,7 @@ package com.asterexcrisys.tetris.services;
 import com.asterexcrisys.tetris.GlobalSettings;
 import com.asterexcrisys.tetris.constants.GameConstants;
 import com.asterexcrisys.tetris.handlers.Cell;
+import com.asterexcrisys.tetris.listeners.BoardEventListener;
 import com.asterexcrisys.tetris.types.*;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class TetrisBoard implements AutoCloseable {
     private final AudioPlayer musicPlayer;
     private final AudioPlayer soundPlayer;
     private GameState state;
+    private BoardEventListener listener;
 
     public TetrisBoard() {
         board = new Cell[GameConstants.BOARD_HEIGHT * 2][GameConstants.BOARD_WIDTH];
@@ -30,6 +32,7 @@ public class TetrisBoard implements AutoCloseable {
         musicPlayer = new AudioPlayer(AudioType.MUSIC_TRACK);
         soundPlayer = new AudioPlayer(AudioType.SOUND_EFFECT);
         state = GameState.IDLE;
+        listener = null;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 board[i][j] = new Cell(CellType.EMPTY, Color.TRANSPARENT);
@@ -59,12 +62,20 @@ public class TetrisBoard implements AutoCloseable {
         return state;
     }
 
+    public BoardEventListener getListener() {
+        return listener;
+    }
+
+    public void setListener(BoardEventListener listener) {
+        this.listener = listener;
+    }
+
     public void start() {
         if (state != GameState.IDLE || !tetromino.canSpawn(board)) {
             return;
         }
         spawnTetromino(false);
-        musicPlayer.play(MusicTrackType.MAIN_THEME);
+        musicPlayer.play(GlobalSettings.getInstance().getMusicTrack());
         state = GameState.RUNNING;
     }
 
@@ -136,6 +147,9 @@ public class TetrisBoard implements AutoCloseable {
         switch (type) {
             case GO_LEFT, GO_RIGHT, ROTATE_LEFT, ROTATE_RIGHT -> soundPlayer.play(SoundEffectType.TETROMINO_MOVED);
         }
+        if (listener != null) {
+            listener.onTetrominoMoved(type);
+        }
     }
 
     public void holdTetromino() {
@@ -158,6 +172,9 @@ public class TetrisBoard implements AutoCloseable {
         for (Position position : tetromino.position()) {
             board[position.x()][position.y()].setType(CellType.MOVABLE);
             board[position.x()][position.y()].setColor(tetromino.color());
+        }
+        if (listener != null) {
+            listener.onTetrominoHeld();
         }
     }
 
@@ -214,10 +231,14 @@ public class TetrisBoard implements AutoCloseable {
     private void spawnTetromino(boolean shouldReset) {
         if (shouldReset) {
             tetromino.reset(queue.poll());
-            if (!tetromino.canSpawn(board)) {
-                state = GameState.OVER;
-                return;
+        }
+        if (!tetromino.canSpawn(board)) {
+            state = GameState.OVER;
+            soundPlayer.play(SoundEffectType.GAME_OVER);
+            if (listener != null) {
+                listener.onGameOver();
             }
+            return;
         }
         for (Position position : tetromino.position()) {
             board[position.x()][position.y()].setType(CellType.MOVABLE);
@@ -259,6 +280,9 @@ public class TetrisBoard implements AutoCloseable {
             case DOUBLE -> soundPlayer.play(SoundEffectType.TWO_LINES_CLEARED);
             case TRIPLE -> soundPlayer.play(SoundEffectType.THREE_LINES_CLEARED);
             case TETRIS -> soundPlayer.play(SoundEffectType.FOUR_LINES_CLEARED);
+        }
+        if (listener != null) {
+            listener.onLinesCleared(type);
         }
     }
 
