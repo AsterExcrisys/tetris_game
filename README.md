@@ -49,10 +49,7 @@ cd tetris_game
 2. **Build & Run (using Maven):**
 
 ```bash
-mvn clean package
-```
-
-```bash
+mvn clean compile
 mvn javafx:run
 ```
 
