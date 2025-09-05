@@ -49,10 +49,7 @@ cd tetris_game
 2. **Build & Run (using Maven):**
 
 ```bash
-mvn clean package
-```
-
-```bash
+mvn clean compile
 mvn javafx:run
 ```
 
@@ -98,6 +95,6 @@ This project is licensed under the terms of the GPLv3. You are free to use, modi
 
 ## 🙌 Credits
 
-* JavaFX for GUI and multimedia support
-* SQLite JDBC for local database integration
-* Music/Sound assets
+* [JavaFX](https://openjfx.io/) for GUI and multimedia support
+* [SQLite JDBC](https://github.com/xerial/sqlite-jdbc) for local database integration
+* [Music/Sound assets](https://downloads.khinsider.com/game-soundtracks/album/tetris-gb) for tracks and effects used in the game
