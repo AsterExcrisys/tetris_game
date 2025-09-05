@@ -1,21 +1,18 @@
 package com.asterexcrisys.tetris.controllers;
 
-import com.asterexcrisys.tetris.MainApplication;
 import com.asterexcrisys.tetris.constants.ResourceConstants;
 import com.asterexcrisys.tetris.services.RankingManager;
 import com.asterexcrisys.tetris.types.Record;
+import com.asterexcrisys.tetris.utilities.GlobalUtility;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class LeaderboardController {
+public final class LeaderboardController implements BaseController {
 
     @FXML
     private TableView<Record> leaderboardTable;
@@ -63,17 +60,11 @@ public final class LeaderboardController {
     @FXML
     private void onBackButtonClick() {
         manager.close();
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(ResourceConstants.GAME_VIEW));
-        Scene scene;
         try {
-            scene = new Scene(loader.load(), 600, 800);
-        } catch (IOException exception) {
+            GlobalUtility.changeView(ResourceConstants.GAME_VIEW, stage);
+        } catch (Exception exception) {
             LOGGER.log(Level.WARNING, exception.getMessage(), exception);
-            return;
         }
-        GameController controller = loader.getController();
-        controller.setStage(stage);
-        stage.setScene(scene);
     }
 
 }

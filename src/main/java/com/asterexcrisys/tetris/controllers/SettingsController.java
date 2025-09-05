@@ -5,9 +5,8 @@ import com.asterexcrisys.tetris.MainApplication;
 import com.asterexcrisys.tetris.constants.ResourceConstants;
 import com.asterexcrisys.tetris.types.AudioState;
 import com.asterexcrisys.tetris.types.MusicTrackType;
+import com.asterexcrisys.tetris.utilities.GlobalUtility;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -15,13 +14,12 @@ import javafx.scene.control.Slider;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class SettingsController {
+public final class SettingsController implements BaseController {
 
     @FXML
     private ComboBox<String> musicTrackChoice;
@@ -165,17 +163,11 @@ public final class SettingsController {
             musicVolumeTestButton.setText("Test");
             soundVolumeTestButton.setText("Test");
         }
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(ResourceConstants.GAME_VIEW));
-        Scene scene;
         try {
-            scene = new Scene(loader.load(), 600, 800);
-        } catch (IOException exception) {
+            GlobalUtility.changeView(ResourceConstants.GAME_VIEW, stage);
+        } catch (Exception exception) {
             LOGGER.log(Level.WARNING, exception.getMessage(), exception);
-            return;
         }
-        GameController controller = loader.getController();
-        controller.setStage(stage);
-        stage.setScene(scene);
     }
 
 }

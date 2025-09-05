@@ -1,26 +1,24 @@
 package com.asterexcrisys.tetris.controllers;
 
-import com.asterexcrisys.tetris.MainApplication;
 import com.asterexcrisys.tetris.constants.GameConstants;
 import com.asterexcrisys.tetris.constants.ResourceConstants;
 import com.asterexcrisys.tetris.handlers.Cell;
+import com.asterexcrisys.tetris.handlers.PreviewHandler;
 import com.asterexcrisys.tetris.services.GravityCounter;
 import com.asterexcrisys.tetris.services.RankingManager;
 import com.asterexcrisys.tetris.services.TetrisBoard;
 import com.asterexcrisys.tetris.types.*;
 import com.asterexcrisys.tetris.types.Record;
 import com.asterexcrisys.tetris.utilities.GameUtility;
+import com.asterexcrisys.tetris.utilities.GlobalUtility;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -30,13 +28,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class GameController {
+public final class GameController implements BaseController {
 
     // TODO: add a view of the currently held tetromino
 
@@ -71,9 +68,8 @@ public final class GameController {
     private final TetrisBoard game;
     private final GravityCounter counter;
     private final Pane[][] board;
-    private final EventHandler<KeyEvent> handler;
-    private final Image defaultPreview;
-    private final Image spritePreview;
+    private final EventHandler<KeyEvent> listener;
+    private final PreviewHandler handler;
     private final RankingManager manager;
     private final TextInputDialog dialog;
     private Stage stage;
@@ -83,13 +79,8 @@ public final class GameController {
         game = new TetrisBoard();
         counter = new GravityCounter(GameConstants.GRAVITY_TIME);
         board = new Pane[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
-        handler = this::onKeyPressed;
-        defaultPreview = new Image(
-                Objects.requireNonNull(MainApplication.class.getResourceAsStream(ResourceConstants.ICON_IMAGE))
-        );
-        spritePreview = new Image(
-                Objects.requireNonNull(MainApplication.class.getResourceAsStream(ResourceConstants.TETROMINOES_IMAGE))
-        );
+        listener = this::onKeyPressed;
+        handler = new PreviewHandler();
         manager = new RankingManager();
         dialog = new TextInputDialog();
         stage = null;
@@ -112,7 +103,7 @@ public final class GameController {
         }
         menuPane.setVisible(false);
         previewImage.setPreserveRatio(false);
-        previewImage.setImage(defaultPreview);
+        previewImage.setImage(handler.getDefaultPreview());
         previewImage.setViewport(null);
         dialog.setTitle(GameConstants.DIALOG_TITLE);
         dialog.setHeaderText(GameConstants.DIALOG_HEADER);
@@ -131,7 +122,7 @@ public final class GameController {
             if (game.state() == GameState.DISPOSED) {
                 return;
             }
-            gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
+            gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, listener);
             timeline.stop();
             game.reset();
             counter.reset();
@@ -149,7 +140,7 @@ public final class GameController {
         timeline = new Timeline(new KeyFrame(Duration.millis(100), (event) -> {
             if (game.state() != GameState.RUNNING) {
                 if (game.state() == GameState.OVER) {
-                    gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
+                    gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, listener);
                     timeline.stop();
                     game.reset();
                     counter.reset();
@@ -169,7 +160,7 @@ public final class GameController {
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
-        gamePane.addEventHandler(KeyEvent.KEY_PRESSED, handler);
+        gamePane.addEventHandler(KeyEvent.KEY_PRESSED, listener);
         startButton.setText("End");
         menuPane.setVisible(false);
     }
@@ -177,7 +168,7 @@ public final class GameController {
     @FXML
     private void onSettingsButtonClick() {
         if (game.state() != GameState.IDLE && game.state() != GameState.DISPOSED) {
-            gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
+            gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, listener);
             timeline.stop();
             game.close();
             counter.reset();
@@ -188,23 +179,17 @@ public final class GameController {
             startButton.setText("Start");
             menuPane.setVisible(false);
         }
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(ResourceConstants.SETTINGS_VIEW));
-        Scene scene;
         try {
-            scene = new Scene(loader.load(), 600, 800);
-        } catch (IOException exception) {
+            GlobalUtility.changeView(ResourceConstants.SETTINGS_VIEW, stage);
+        } catch (Exception exception) {
             LOGGER.log(Level.WARNING, exception.getMessage(), exception);
-            return;
         }
-        SettingsController controller = loader.getController();
-        controller.setStage(stage);
-        stage.setScene(scene);
     }
 
     @FXML
     private void onLeaderboardButtonClick() {
         if (game.state() != GameState.IDLE && game.state() != GameState.DISPOSED) {
-            gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
+            gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, listener);
             timeline.stop();
             game.close();
             counter.reset();
@@ -215,23 +200,17 @@ public final class GameController {
             startButton.setText("Start");
             menuPane.setVisible(false);
         }
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(ResourceConstants.LEADERBOARD_VIEW));
-        Scene scene;
         try {
-            scene = new Scene(loader.load(), 600, 800);
-        } catch (IOException exception) {
+            GlobalUtility.changeView(ResourceConstants.LEADERBOARD_VIEW, stage);
+        } catch (Exception exception) {
             LOGGER.log(Level.WARNING, exception.getMessage(), exception);
-            return;
         }
-        LeaderboardController controller = loader.getController();
-        controller.setStage(stage);
-        stage.setScene(scene);
     }
 
     @FXML
     private void onCreditsButtonClick() {
         if (game.state() != GameState.IDLE && game.state() != GameState.DISPOSED) {
-            gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
+            gamePane.removeEventHandler(KeyEvent.KEY_PRESSED, listener);
             timeline.stop();
             game.close();
             counter.reset();
@@ -242,17 +221,11 @@ public final class GameController {
             startButton.setText("Start");
             menuPane.setVisible(false);
         }
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(ResourceConstants.CREDITS_VIEW));
-        Scene scene;
         try {
-            scene = new Scene(loader.load(), 600, 800);
-        } catch (IOException exception) {
+            GlobalUtility.changeView(ResourceConstants.CREDITS_VIEW, stage);
+        } catch (Exception exception) {
             LOGGER.log(Level.WARNING, exception.getMessage(), exception);
-            return;
         }
-        CreditsController controller = loader.getController();
-        controller.setStage(stage);
-        stage.setScene(scene);
     }
 
     @FXML
@@ -336,12 +309,12 @@ public final class GameController {
 
     private void updatePreview() {
         if (game.state() == GameState.IDLE || game.state() == GameState.DISPOSED) {
-            previewImage.setImage(defaultPreview);
+            previewImage.setImage(handler.getDefaultPreview());
             previewImage.setViewport(null);
             return;
         }
         TetrominoType type = game.queue().peek().type();
-        previewImage.setImage(spritePreview);
+        previewImage.setImage(handler.getSpritePreview());
         previewImage.setViewport(new Rectangle2D(
                 type.corner().x(),
                 type.corner().y(),
